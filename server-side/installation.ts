@@ -65,16 +65,18 @@ async function createSurveySchema(papiClient: PapiClient)
             },
             Answers:
             {
-                Type:'Object',
-                Fields:
-                {
-                    Key:
-                    {
-                        Type: 'String'
-                    },
-                    Value:
-                    {
-                        Type: 'Object'
+                Type:'Array',
+                Items:{
+                    Type:'Object',
+                    Fields:{
+                        Key:
+                        {
+                            Type: 'String'
+                        },
+                        Value:
+                        {
+                            Type: 'Object'
+                        }
                     }
                 }
             },

@@ -1,1 +1,1 @@
-export const SCHEMA_NAME: string = "survey";
+export const SCHEMA_NAME: string = "surveys";

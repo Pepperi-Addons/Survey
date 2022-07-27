@@ -47,7 +47,7 @@ function createPapiClient(Client: Client)
 async function createSurveySchema(papiClient: PapiClient)
 {
     const schema: AddonDataScheme = {
-        Name: 'survey',
+        Name: 'surveys',
         Type: 'data',
         Fields:
         {

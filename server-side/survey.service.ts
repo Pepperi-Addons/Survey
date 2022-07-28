@@ -28,12 +28,12 @@ class SurveyService {
     private buildFindOptionsFromRequestQuery(): FindOptions
     {
         return {
-            fields: this.request.query.fields ? this.request.query.fields.split(',') : undefined,
-            where: this.request.query.where,
-            order_by: this.request.query.order_by,
-            page: this.request.query.page,
-            page_size: this.request.query.page_size,
-            include_deleted: this.request.query.include_deleted,
+            ...(this.request.query.fields && {fields: this.request.query.fields.split(',')}),
+            ...(this.request.query.where && {where: this.request.query.where}),
+            ...(this.request.query.order_by && {order_by: this.request.query.order_by}),
+            ...(this.request.query.page && {page: this.request.query.page}),
+            ...(this.request.query.page_size && {page_size: this.request.query.page_size}),
+            ...(this.request.query.include_deleted && {include_deleted: this.request.query.include_deleted}),
         };
     }
 

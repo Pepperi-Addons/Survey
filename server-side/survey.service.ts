@@ -5,7 +5,6 @@ import { Survey } from './types';
 import PapiService from './papi.service';
 
 class SurveyService {
-
     constructor(private client: Client, private request: Request, private papiService: PapiService)
     {
 
@@ -36,6 +35,11 @@ class SurveyService {
             page_size: this.request.query.page_size,
             include_deleted: this.request.query.include_deleted,
         };
+    }
+
+    postSurvey()
+    {
+        return this.papiService.postSurvey(this.request.body);
     }
 }
 

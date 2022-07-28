@@ -14,6 +14,11 @@ export async function surveys(client: Client, request: Request)
 		const surveyService = getSurveyService(client, request);
         return surveyService.getSurveys();
 	}
+    case "POST":
+	{
+		const surveyService = getSurveyService(client, request);
+        return surveyService.postSurvey();
+	}
 	default:
 	{
 		throw new Error(`Unsupported method: ${request.method}`);

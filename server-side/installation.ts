@@ -15,7 +15,7 @@ import { SCHEMA_NAME } from './constants';
 export async function install(client: Client, request: Request): Promise<any> {
     
     const papiClient = createPapiClient(client);
-    createSurveySchema(papiClient);
+    createSurveySchema(papiClient, client);
     return {success:true,resultObject:{}}
 }
 
@@ -45,11 +45,12 @@ function createPapiClient(Client: Client)
 	});
 }
 
-async function createSurveySchema(papiClient: PapiClient)
+async function createSurveySchema(papiClient: PapiClient, client: Client)
 {
     const schema: AddonDataScheme = {
         Name: SCHEMA_NAME,
         Type: 'data',
+        AddonUUID: client.AddonUUID,
         Fields:
         {
             Status: 

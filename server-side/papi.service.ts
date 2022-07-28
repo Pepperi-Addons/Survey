@@ -1,7 +1,6 @@
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
 import { SCHEMA_NAME } from './constants';
-import { Helper } from './helper';
 import { Survey } from './types';
 
 export class PapiService 
@@ -13,6 +12,11 @@ export class PapiService
 	{
 		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).find(findOptions);
 	}
+
+    postSurvey(body: any): Promise<Survey>
+    {
+		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).upsert(body);
+    }
 }
 
 export default PapiService;

@@ -2,7 +2,7 @@ import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import PapiService from '../papi.service';
-import { mockClient } from './consts';
+import { mockClient, validateArraysHaveSameObjects } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
 import  SurveyService from '../survey.service';
@@ -53,8 +53,3 @@ describe('GET surveys', async () => {
         
     });
 });
-
-function validateArraysHaveSameObjects(fields: string[] | undefined, arg1: any) {
-    expect(fields?.every(field => arg1.includes(field))).to.be.true;
-    expect(arg1.every(field => fields?.includes(field))).to.be.true;
-}

@@ -1,5 +1,7 @@
 // import { PapiClientOptions } from '@pepperi-addons/papi-sdk';
 
+import { expect } from "chai";
+
 export const mockClient/*: PapiClientOptions*/ = {
     AddonUUID: 'NotUsed',
     BaseURL: 'NotUsed',
@@ -12,4 +14,9 @@ export const mockClient/*: PapiClientOptions*/ = {
     ValidatePermission(policyName) {
         return Promise.resolve();
     }
+}
+
+export function validateArraysHaveSameObjects(fields: string[] | undefined, arg1: any) {
+    expect(fields?.every(field => arg1.includes(field))).to.be.true;
+    expect(arg1.every(field => fields?.includes(field))).to.be.true;
 }

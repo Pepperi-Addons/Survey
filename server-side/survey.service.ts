@@ -151,6 +151,39 @@ class SurveyService {
         }
     }
 
+    /**
+     * Similar to getSurveys 
+     * @returns An array of surveys that match the parametesr of the request body
+     */
+    search()
+    {
+        this.validateSearchRequest();
+        return this.papiService.searchSurveys(this.request.body);
+    }
+
+    validateSearchRequest() {
+        if(this.request.body.UniqueFieldID && !UNIQUE_FIELDS.includes(this.request.body.UniqueFieldID))
+		{
+			const errorMessage = `The passed UniqueFieldID is not supported: '${this.request.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(UNIQUE_FIELDS)}`;
+			console.error(errorMessage);
+			throw new Error(errorMessage);
+		}
+
+		if(this.request.body.KeyList && (this.request.body.UniqueFieldID || this.request.body.UniqueFieldList))
+		{
+			const errorMessage = `Sending both KeyList and UniqueFieldList is not supported.`;
+			console.error(errorMessage);
+			throw new Error(errorMessage);
+		}
+
+		if(this.request.body.UniqueFieldList && !this.request.body.UniqueFieldID)
+		{
+			const errorMessage = `Missing UniqueFieldID parameter.`;
+			console.error(errorMessage);
+			throw new Error(errorMessage);
+		}
+    }
+
     postSurvey()
     {
         return this.papiService.postSurvey(this.request.body);

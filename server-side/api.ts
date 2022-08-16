@@ -26,6 +26,24 @@ export async function surveys(client: Client, request: Request)
 	}
 }
 
+export async function get_surveys_by_key(client: Client, request: Request) 
+{
+	console.log(`Query received: ${JSON.stringify(request.query)}`);
+
+	switch (request.method) 
+	{
+	case "GET":
+	{
+		const surveyService = getSurveyService(client, request);
+        return surveyService.getSurveyByKey();
+	}
+	default:
+	{
+		throw new Error(`Unsupported method: ${request.method}`);
+	}
+	}
+}
+
 function getSurveyService(client: Client, request: Request) {
     const papiClient = Helper.getPapiClient(client);
     const papiService = new PapiService(papiClient, client);

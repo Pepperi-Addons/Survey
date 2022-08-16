@@ -13,16 +13,4 @@ export class Helper
 			addonSecretKey: client.AddonSecretKey,
 		});
 	}
-
-	static encodeQueryParams(params: any) 
-	{
-		const ret: string[] = [];
-
-		Object.keys(params).forEach((key) => 
-		{
-			ret.push(key + '=' + encodeURIComponent(params[key]));
-		});
-
-		return ret.join('&');
-	}
 }

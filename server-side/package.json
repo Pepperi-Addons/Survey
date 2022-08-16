@@ -10,7 +10,7 @@
     "license": "Apache-2.0",
     "keywords": [],
     "scripts": {
-        "test": "ts-mocha \"./{,!(node_modules)/**/}*.spec.ts\" -R mochawesome --reporter-options reportDir=tests/reports,reportFilename=PermissionsTestsReport,reportTitle=Permissions_Tests_Report",
+        "test": "ts-mocha \"./{,!(node_modules)/**/}*.spec.ts\" -R mochawesome --reporter-options reportDir=tests/reports,reportFilename=SurveyTestsReport,reportTitle=Survey_Tests_Report",
         "test-noReport": "ts-mocha \"./{,!(node_modules)/**/}*.spec.ts\"",
         "compile": "tsc",
         "build": "rollup -c rollup.config.js",

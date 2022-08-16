@@ -1,12 +1,29 @@
-import MyService from './my.service'
+import SurveyService from './survey.service'
 import { Client, Request } from '@pepperi-addons/debug-server'
+import { Helper } from './helper';
+import PapiService from './papi.service';
 
-// add functions here
-// this function will run on the 'api/foo' endpoint
-// the real function is runnning on another typescript file
-export async function foo(client: Client, request: Request) {
-    const service = new MyService(client)
-    const res = await service.getAddons()
-    return res
-};
+export async function surveys(client: Client, request: Request) 
+{
+	console.log(`Query received: ${JSON.stringify(request.query)}`);
 
+	switch (request.method) 
+	{
+	case "GET":
+	{
+		const surveyService = getSurveyService(client, request);
+        return surveyService.getSurveys();
+	}
+	default:
+	{
+		throw new Error(`Unsupported method: ${request.method}`);
+	}
+	}
+}
+
+function getSurveyService(client: Client, request: Request) {
+    const papiClient = Helper.getPapiClient(client);
+    const papiService = new PapiService(papiClient, client);
+    const surveyService = new SurveyService(client, request, papiService);
+    return surveyService;
+}

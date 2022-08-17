@@ -13,15 +13,15 @@ export class PapiService
 		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).find(findOptions);
 	}
 
-    getSurveyByKey(key: any): Promise<Survey>
-    {
-        return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).key(key).get();
-    }
+	async getSurveyByKey(key: any): Promise<Survey>
+	{
+		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).key(key).get();
+	}
 
-    postSurvey(body: any): Promise<Survey>
-    {
-		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).upsert(body);
-    }
+	async postSurvey(body: Survey): Promise<Survey>
+	{
+		  return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).upsert(body);
+	}
 }
 
 export default PapiService;

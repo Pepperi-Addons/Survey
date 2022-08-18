@@ -39,17 +39,17 @@ describe('GET surveys', async () => {
         }
         const survey = new SurveyService(mockClient ,requestCopy, papiService);
         papiService.getSurveys = async (findOptions: FindOptions) => {
-            console.log(JSON.stringify(findOptions));
             expect(findOptions.page).to.equal(requestCopy.query.page);
             expect(findOptions.page_size).to.equal(requestCopy.query.page_size);
             validateArraysHaveSameObjects(findOptions.fields, requestCopy.query.fields.split(','));
             expect(findOptions.include_deleted).to.equal(requestCopy.query.include_deleted);
             expect(findOptions.where).to.equal(requestCopy.query.where);
 
+            // Don't care...
             return [];
         }
 
-        const items = await survey.getSurveys();
+        await survey.getSurveys();
         
     });
 });

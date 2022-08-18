@@ -12,26 +12,30 @@ import { Client, Request } from '@pepperi-addons/debug-server'
 import { AddonDataScheme, PapiClient } from '@pepperi-addons/papi-sdk'
 import { SCHEMA_NAME } from './constants';
 
-export async function install(client: Client, request: Request): Promise<any> {
+export async function install(client: Client, request: Request): Promise<any> 
+{
     
-    const papiClient = createPapiClient(client);
-    createSurveySchema(papiClient);
-    return {success:true,resultObject:{}}
+	const papiClient = createPapiClient(client);
+	createSurveySchema(papiClient, client);
+	return {success:true,resultObject:{}}
 }
 
-export async function uninstall(client: Client, request: Request): Promise<any> {
+export async function uninstall(client: Client, request: Request): Promise<any> 
+{
 
-    const papiClient = createPapiClient(client);
-    purgeSurveySchema(papiClient);
-    return {success:true,resultObject:{}}
+	const papiClient = createPapiClient(client);
+	purgeSurveySchema(papiClient);
+	return {success:true,resultObject:{}}
 }
 
-export async function upgrade(client: Client, request: Request): Promise<any> {
-    return {success:true,resultObject:{}}
+export async function upgrade(client: Client, request: Request): Promise<any> 
+{
+	return {success:true,resultObject:{}}
 }
 
-export async function downgrade(client: Client, request: Request): Promise<any> {
-    return {success:true,resultObject:{}}
+export async function downgrade(client: Client, request: Request): Promise<any> 
+{
+	return {success:true,resultObject:{}}
 }
 
 function createPapiClient(Client: Client) 
@@ -45,57 +49,58 @@ function createPapiClient(Client: Client)
 	});
 }
 
-async function createSurveySchema(papiClient: PapiClient)
+async function createSurveySchema(papiClient: PapiClient, client: Client)
 {
-    const schema: AddonDataScheme = {
-        Name: SCHEMA_NAME,
-        Type: 'data',
-        Fields:
+	const schema: AddonDataScheme = {
+		Name: SCHEMA_NAME,
+		Type: 'data',
+		AddonUUID: client.AddonUUID,
+		Fields:
         {
-            Status: 
+        	Status: 
             {
-                Type: 'String'
+            	Type: 'String'
             },
-            ExternalID: 
+        	ExternalID: 
             {
-                Type: 'String'
+            	Type: 'String'
             },
-            Template:
+        	Template:
             {
-                Type: 'String'
+            	Type: 'String'
             },
-            Answers:
+        	Answers:
             {
-                Type:'Array',
-                Items:{
-                    Type:'Object',
-                    Fields:{
-                        Key:
+            	Type:'Array',
+            	Items:{
+            		Type:'Object',
+            		Fields:{
+            			Key:
                         {
-                            Type: 'String'
+                        	Type: 'String'
                         },
-                        Value:
+            			Value:
                         {
-                            Type: 'Object'
+                        	Type: 'Object'
                         }
-                    }
-                }
+            		}
+            	}
             },
-            Creator:
+        	Creator:
             {
-                Type: 'String'
+            	Type: 'String'
             },
-            Account:
+        	Account:
             {
-                Type: 'String'
+            	Type: 'String'
             }
         }
-    }
+	}
 
-    await papiClient.addons.data.schemes.post(schema);
+	await papiClient.addons.data.schemes.post(schema);
 }
 
 async function purgeSurveySchema(papiClient: PapiClient)
 {
-    await papiClient.post('/addons/data/schemes/survey/purge');
+	await papiClient.post('/addons/data/schemes/survey/purge');
 }

@@ -13,10 +13,10 @@ export class PapiService
 		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).find(findOptions);
 	}
 
-    getSurveyByKey(key: any): Promise<Survey>
-    {
-        return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).key(key).get();
-    }
+	async getSurveyByKey(key: any): Promise<Survey>
+	{
+		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).key(key).get();
+	}
 
     /**
      * Returns an *array* of surveys. It is up to the user to validate the response length.
@@ -39,7 +39,7 @@ export class PapiService
         return this.papiClient.post(`/addons/data/search/${this.client.AddonUUID}/${SCHEMA_NAME}`, body);
     }
 
-    postSurvey(body: any): Promise<Survey>
+    postSurvey(body: Survey): Promise<Survey>
     {
 		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).upsert(body);
     }

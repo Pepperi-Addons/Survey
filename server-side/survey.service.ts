@@ -1,5 +1,6 @@
 import { FindOptions } from '@pepperi-addons/papi-sdk'
 import { Client, Request } from '@pepperi-addons/debug-server';
+import { UNIQUE_FIELDS } from './constants';
 import { Survey } from './types';
 import PapiService from './papi.service';
 
@@ -41,23 +42,23 @@ class SurveyService
      * 
      * @returns A survey by key
      */
-	async getSurveyByKey(key?: string): Promise<Survey>
-	{
-		const getKey = key ?? this.request.query.key;
-		this.validateGetSurveysByKeyRequest(getKey);
+    async getSurveyByKey(key?: string)
+    {
+        const requestedKey = key ?? this.request.query.key;
+        this.validateGetSurveysByKeyRequest(requestedKey);
 
-		let survey: Survey = {};
-		try
-		{
-			survey = await this.papiService.getSurveyByKey(getKey);
-		}
-		catch(papiError)
-		{
-			if(papiError instanceof Error)
-			{
-				console.log(papiError);
-				const error :any = new Error(`Could not find a survey with requested key '${getKey}'`);
-				error.code = 404;
+        let survey: Survey = {};
+        try
+        {
+            survey = await this.papiService.getSurveyByKey(requestedKey);
+        }
+        catch(papiError)
+        {
+            if(papiError instanceof Error)
+            {
+                console.log(papiError);
+                const error :any = new Error(`Could not find a survey with requested key '${requestedKey}'`);
+                error.code = 404;
 
 				throw error;
 			}
@@ -68,15 +69,88 @@ class SurveyService
 	/**
      * Validate the request query for getSurveysByKey
      */
-	validateGetSurveysByKeyRequest(key: string)
-	{
-		if(!key)
-		{
-			const errorMessage = `The request query must contain a key parameter.`;
-			console.error(errorMessage);
-			throw new Error(errorMessage);
-		}
-	}
+    validateGetSurveysByKeyRequest(key: string)
+    {
+        if(!key)
+        {
+            const errorMessage = `The request query must contain a key parameter.`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+    }
+
+    /**
+     * 
+     * @returns A survey by unique field
+     */
+    async getSurveyByUniqueField(): Promise<Survey>
+    {
+        this.validateGetSurveyByUniqueFieldRequest();
+
+        if(this.request.query.unique_field === 'Key')
+        {
+            return this.getSurveyByKey(this.request.query.value);
+        }
+        else
+        {
+            const res: Array<Survey> = await this.papiService.getSurveyByUniqueField(this.request.query.unique_field, this.request.query.value);
+            
+            this.validateGetByUniqueFieldResult(res);
+
+            return res[0];
+        }
+    }
+
+    /**
+     * Throws an exception in case the number of results is not 1.
+     * @param res the list of results to validate
+     */
+    private validateGetByUniqueFieldResult(res: Survey[])
+    {
+        if (res.length === 0) {
+            const errorMessage = `Could not find a survey with unique_field: '${this.request.query.unique_field}' and value '${this.request.query.value}'`;
+            console.error(errorMessage);
+            const error: any = new Error(errorMessage);
+            error.code = 404;
+            throw error;
+        }
+
+        if (res.length > 1) {
+            // Something super strange happened...
+            const errorMessage = `Found more than one survey with unique_field: '${this.request.query.unique_field}' and value '${this.request.query.value}'`;
+            console.error(errorMessage);
+            const error: any = new Error(errorMessage);
+            error.code = 404;
+            throw error;
+        }
+    }
+
+    /**
+     * Validate the request query for getSurveyByUniqueField 
+     */
+    validateGetSurveyByUniqueFieldRequest()
+    {
+        if(!this.request.query.unique_field)
+        {
+            const errorMessage = `The request query must contain a unique_field parameter.`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+
+        if(!this.request.query.value)
+        {
+            const errorMessage = `The request query must contain a value parameter.`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+
+        if(!UNIQUE_FIELDS.includes(this.request.query.unique_field))
+        {
+            const errorMessage = `The unique_field parameter must be one of the following: '${UNIQUE_FIELDS.join(', ')}'.`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+    }
              
 	async postSurvey()
 	{

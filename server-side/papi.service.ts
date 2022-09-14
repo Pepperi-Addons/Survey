@@ -1,8 +1,8 @@
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
 import { IApiService } from 'surveys-shared';
-import { SCHEMA_NAME } from './constants';
-import { Survey } from './types';
+import { SCHEMA_NAME } from 'surveys-shared';
+import { Survey } from 'surveys-shared';
 
 export class PapiService implements IApiService
 {

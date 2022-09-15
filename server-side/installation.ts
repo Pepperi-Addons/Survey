@@ -10,7 +10,8 @@ The error Message is importent! it will be written in the audit log and help the
 
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { AddonDataScheme, PapiClient } from '@pepperi-addons/papi-sdk'
-import { SCHEMA_NAME } from './constants';
+import { SCHEMA_NAME } from 'surveys-shared';
+
 
 export async function install(client: Client, request: Request): Promise<any> 
 {
@@ -55,6 +56,9 @@ async function createSurveySchema(papiClient: PapiClient, client: Client)
 		Name: SCHEMA_NAME,
 		Type: 'data',
 		AddonUUID: client.AddonUUID,
+		"SyncData": { 
+			"Sync": true,
+		},
 		Fields:
         {
         	Status: 

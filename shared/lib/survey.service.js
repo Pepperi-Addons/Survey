@@ -3,8 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SurveyService = void 0;
 const constants_1 = require("./constants");
 class SurveyService {
-    constructor(client, request, iApiService) {
-        this.client = client;
+    constructor(request, iApiService) {
         this.request = request;
         this.iApiService = iApiService;
     }

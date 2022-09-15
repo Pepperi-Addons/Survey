@@ -66,6 +66,6 @@ function getSurveyService(client: Client, request: Request)
 {
     const papiClient = Helper.getPapiClient(client);
     const papiService: IApiService = new PapiService(papiClient, client);
-    const surveyService = new SurveyService(client, request, papiService);
+    const surveyService = new SurveyService(request, papiService);
     return surveyService;
 }

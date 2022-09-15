@@ -3,7 +3,7 @@ import { FindOptions } from "@pepperi-addons/papi-sdk";
 import { IApiService, SCHEMA_NAME, Survey } from "surveys-shared";
 import config from '../addon.config.json'
 
-class ApiService implements IApiService
+export class ApiService implements IApiService
 {
     async getSurveys(findOptions: FindOptions): Promise<Array<Survey>>
     {

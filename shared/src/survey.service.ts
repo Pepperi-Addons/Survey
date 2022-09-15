@@ -1,12 +1,12 @@
 import { FindOptions } from '@pepperi-addons/papi-sdk'
-import { Client, Request } from '@pepperi-addons/debug-server';
+import { Request } from '@pepperi-addons/debug-server';
 import { UNIQUE_FIELDS } from './constants';
 import { Survey } from './types';
 import IApiService from './iApiService';
 
 export class SurveyService 
 {
-	constructor(private client: Client, private request: Request, private iApiService: IApiService)
+	constructor(private request: Request, private iApiService: IApiService)
 	{
 
 	}

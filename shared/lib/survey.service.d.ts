@@ -1,11 +1,10 @@
-import { Client, Request } from '@pepperi-addons/debug-server';
+import { Request } from '@pepperi-addons/debug-server';
 import { Survey } from './types';
 import IApiService from './iApiService';
 export declare class SurveyService {
-    private client;
     private request;
     private iApiService;
-    constructor(client: Client, request: Request, iApiService: IApiService);
+    constructor(request: Request, iApiService: IApiService);
     /**
      * Get surveys
      * @returns An array of surveys

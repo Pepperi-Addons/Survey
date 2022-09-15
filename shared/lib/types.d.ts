@@ -8,6 +8,9 @@ export interface Survey extends AddonData {
     Creator?: string;
     Account?: string;
 }
+export interface SurveyWithKey extends Survey {
+    Key: string;
+}
 export interface Answer {
     Key: string;
     Value: any;

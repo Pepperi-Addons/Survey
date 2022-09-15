@@ -1,24 +1,16 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
-import { mockClient } from './consts';
+import { MockApiService } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
-import { PapiClient } from '@pepperi-addons/papi-sdk';
-import  SurveyService from '../survey.service';
+import { SurveyService } from '..';
 
 chai.use(promised);
 
 describe('GET survey by key', async () => {
 
-    const papiClient = new PapiClient({
-        baseURL: mockClient.BaseURL,
-        token: mockClient.OAuthAccessToken,
-        addonUUID: mockClient.AddonUUID,
-        actionUUID: mockClient.ActionUUID,
-    });
 
-    const papiService = new PapiService(papiClient, mockClient);
+    const papiService = new MockApiService();
 
     const request: Request = {
         method: 'GET',
@@ -33,7 +25,7 @@ describe('GET survey by key', async () => {
         requestCopy.query = {
             key:'myKey'
         }
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
         papiService.getSurveyByKey = async (key: string) => {
             expect(key).to.equal(requestCopy.query.key);
 
@@ -45,13 +37,13 @@ describe('GET survey by key', async () => {
         
     });
 
-    it('should throw a "Could not find a survey with requested key" excpetion', async () => {
+    it('should throw a "Could not find a survey with requested key" exception', async () => {
 
         const requestCopy = { ...request };
         requestCopy.query = {
             key:'myKey'
         }
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
         papiService.getSurveyByKey = async (key: string) => {
             throw new Error();
         }
@@ -60,11 +52,11 @@ describe('GET survey by key', async () => {
         
     });
 
-    it('should throw a "The request query must contain a key parameter." excpetion', async () => {
+    it('should throw a "The request query must contain a key parameter." exception', async () => {
 
         const requestCopy = { ...request };
         requestCopy.query = {}
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
 
         await expect(survey.getSurveyByKey()).to.be.rejectedWith(`The request query must contain a key parameter.`);
         

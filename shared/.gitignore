@@ -2,3 +2,5 @@
 var_sk
 /node_modules/**
 /mochawesome-report/**
+tests/**
+lib/**

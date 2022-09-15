@@ -29,10 +29,6 @@ export interface Survey extends AddonData{
     // Performer: string;
 }
 
-export interface SurveyWithKey extends Survey{
-    Key: string
-}
-
 export interface Answer {
     // the key of the question in the template
     Key:string;

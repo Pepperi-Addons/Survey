@@ -25,7 +25,7 @@ export async function uninstall(client: Client, request: Request): Promise<any>
 {
 
 	const papiClient = createPapiClient(client);
-	purgeSurveySchema(papiClient);
+	// No need to purge the schema on uninstall...
 	return {success:true,resultObject:{}}
 }
 

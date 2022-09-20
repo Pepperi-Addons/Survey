@@ -122,14 +122,14 @@ class SurveyService {
             console.error(errorMessage);
             throw new Error(errorMessage);
         }
-        if (!this.request.body.Creator) {
+        if (!this.request.body.Creator || !this.request.body.Template) {
             // Creator field is mandatory on creation. Ensure a survey exists, else throw an error.
             try {
                 await this.getSurveyByKey(this.request.body.Key);
             }
             catch (error) {
                 // Survey not found and creator field is mandatory. Throw an error.
-                const errorMessage = `The survey with key '${this.request.body.Key}' does not exist. The creator field is mandatory on creation.`;
+                const errorMessage = `The survey with key '${this.request.body.Key}' does not exist. The Creator and Template fields are mandatory on creation.`;
                 console.error(errorMessage);
                 throw new Error(errorMessage);
             }

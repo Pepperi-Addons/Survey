@@ -10,7 +10,7 @@
     "license": "Apache-2.0",
     "keywords": [],
     "scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+        "test": "echo \"Error: no test specified\" && exit 1",
         "compile": "tsc",
         "build": "rollup -c rollup.config.js",
         "start": "tsc -w app.local.ts"
@@ -33,6 +33,6 @@
     "dependencies": {
         "@pepperi-addons/debug-server": "*",
         "@pepperi-addons/papi-sdk": "*",
-        "surveys-shared": "file:../shared/"
+        "surveys-shared": "file:../shared"
     }
 }

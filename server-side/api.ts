@@ -62,6 +62,22 @@ export async function get_surveys_by_unique_field(client: Client, request: Reque
 	}
 }
 
+export async function surveys_search(client: Client, request: Request) 
+{
+	switch (request.method) 
+	{
+	case "POST":
+	{
+		const surveyService = getSurveyService(client, request);
+        return surveyService.search();
+	}
+	default:
+	{
+		throw new Error(`Unsupported method: ${request.method}`);
+	}
+	}
+}
+
 function getSurveyService(client: Client, request: Request)
 {
     const papiClient = Helper.getPapiClient(client);

@@ -1,6 +1,6 @@
 import { ADALGetParams, ADALUpsertParams } from "@pepperi-addons/client-api";
 import { FindOptions } from "@pepperi-addons/papi-sdk";
-import { IApiService, SCHEMA_NAME, Survey } from "surveys-shared";
+import { IApiService, SurveysConstants, Survey } from "surveys-shared";
 import config from '../addon.config.json'
 
 export class ApiService implements IApiService
@@ -14,7 +14,7 @@ export class ApiService implements IApiService
     {
         const adalGetParams: ADALGetParams = {
             addon: config.AddonUUID,
-            table: SCHEMA_NAME,
+            table: SurveysConstants.schemaNames.BASE_SURVEYS,
             key: key
         };
         return await pepperi.api.adal.get(adalGetParams);
@@ -31,7 +31,7 @@ export class ApiService implements IApiService
         {
             const adalPostParams: ADALUpsertParams = {
                 addon: config.AddonUUID,
-                table: SCHEMA_NAME,
+                table: SurveysConstants.schemaNames.BASE_SURVEYS,
                 object: body as any, // Survey.Key is string|undefined, but for all the validations I did, TS just didn't believe me,
                                      // and didn't want to accept the fact the it does in fact have a valid Key. So I used 'as any'...
                 indexedField: 'Key'

@@ -1,6 +1,6 @@
 import { FindOptions } from '@pepperi-addons/papi-sdk'
 import { Request } from '@pepperi-addons/debug-server';
-import { UNIQUE_FIELDS } from './constants';
+import { SurveysConstants } from './constants';
 import { Survey } from './types';
 import IApiService from './iApiService';
 
@@ -144,9 +144,9 @@ export class SurveyService
             throw new Error(errorMessage);
         }
 
-        if(!UNIQUE_FIELDS.includes(this.request.query.unique_field))
+        if(!SurveysConstants.UNIQUE_FIELDS.includes(this.request.query.unique_field))
         {
-            const errorMessage = `The unique_field parameter must be one of the following: '${UNIQUE_FIELDS.join(', ')}'.`;
+            const errorMessage = `The unique_field parameter must be one of the following: '${SurveysConstants.UNIQUE_FIELDS.join(', ')}'.`;
             console.error(errorMessage);
             throw new Error(errorMessage);
         }

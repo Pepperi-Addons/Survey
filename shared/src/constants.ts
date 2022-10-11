@@ -1,3 +1,19 @@
-export const SCHEMA_NAME: string = "surveys";
+export const SurveysConstants = 
+{
+    schemaNames: {
+        BASE_ACTIVITIES: "baseActivities",
+        BASE_SURVEYS: "baseSurveys",
+        BASE_SURVEY_TEMPLATES: "baseSurveyTemplates",
+        BASE_SURVEY_ANSWERS: "baseSurveyAnswers",
+        BASE_SURVEY_TEMPLATE_SECTIONS: "baseSurveyTemplateSections",
+        BASE_SURVEY_TEMPLATE_QUESTIONS: "baseSurveyTemplateQuestions"
 
-export const UNIQUE_FIELDS: string[] = ["Key"];
+    },
+    dependentAddonsUUIDs: {
+        BASE_ACTIVITIES: "92b9bd68-1660-4998-91bc-3b745b4bab11"
+    },
+    UNIQUE_FIELDS: ["Key"],
+    DATA_SOURCE_INDEX_NAME: "baseActivities",
+
+    
+}

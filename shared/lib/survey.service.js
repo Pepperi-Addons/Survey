@@ -103,8 +103,8 @@ class SurveyService {
             console.error(errorMessage);
             throw new Error(errorMessage);
         }
-        if (!constants_1.UNIQUE_FIELDS.includes(this.request.query.unique_field)) {
-            const errorMessage = `The unique_field parameter must be one of the following: '${constants_1.UNIQUE_FIELDS.join(', ')}'.`;
+        if (!constants_1.SurveysConstants.UNIQUE_FIELDS.includes(this.request.query.unique_field)) {
+            const errorMessage = `The unique_field parameter must be one of the following: '${constants_1.SurveysConstants.UNIQUE_FIELDS.join(', ')}'.`;
             console.error(errorMessage);
             throw new Error(errorMessage);
         }

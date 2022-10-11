@@ -53,7 +53,7 @@ export async function get_surveys_by_unique_field(client: Client, request: Reque
 	case "GET":
 	{
 		const surveyService = getSurveyService(client, request);
-        return surveyService.getSurveyByUniqueField();
+		return surveyService.getSurveyByUniqueField();
 	}
 	default:
 	{
@@ -64,8 +64,8 @@ export async function get_surveys_by_unique_field(client: Client, request: Reque
 
 function getSurveyService(client: Client, request: Request)
 {
-    const papiClient = Helper.getPapiClient(client);
-    const papiService: IApiService = new PapiService(papiClient, client);
-    const surveyService = new SurveyService(request, papiService);
-    return surveyService;
+	const papiClient = Helper.getPapiClient(client);
+	const papiService: IApiService = new PapiService(papiClient, client);
+	const surveyService = new SurveyService(request, papiService);
+	return surveyService;
 }

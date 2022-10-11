@@ -14,7 +14,7 @@ import { SurveysConstants } from 'surveys-shared';
 
 export async function install(client: Client, request: Request): Promise<any> 
 {
-    
+
 	const papiClient = createPapiClient(client);
 	try
 	{
@@ -46,17 +46,17 @@ export async function uninstall(client: Client, request: Request): Promise<any>
 
 	const papiClient = createPapiClient(client);
 	await removeDimxRelations(client, papiClient);
-	return {success:true,resultObject:{}}
+	return { success: true, resultObject: {} }
 }
 
 export async function upgrade(client: Client, request: Request): Promise<any> 
 {
-	return {success:true,resultObject:{}}
+	return { success: true, resultObject: {} }
 }
 
 export async function downgrade(client: Client, request: Request): Promise<any> 
 {
-	return {success:true,resultObject:{}}
+	return { success: true, resultObject: {} }
 }
 
 function createPapiClient(Client: Client) 
@@ -237,13 +237,13 @@ async function createBaseSurveyTemplateQuestionsSchema(papiClient: PapiClient, c
 	await papiClient.addons.data.schemes.post(schema);
 }
 
-async function createDimxRelations(client: Client, papiClient: PapiClient)
+async function createDimxRelations(client: Client, papiClient: PapiClient) 
 {
 	const isHidden = false;
 	await postDimxRelations(client, isHidden, papiClient);
 }
 
-async function removeDimxRelations(client: Client, papiClient: PapiClient)
+async function removeDimxRelations(client: Client, papiClient: PapiClient) 
 {
 	const isHidden = true;
 	await postDimxRelations(client, isHidden, papiClient);
@@ -252,28 +252,28 @@ async function removeDimxRelations(client: Client, papiClient: PapiClient)
 async function postDimxRelations(client: Client, isHidden: boolean, papiClient: PapiClient) 
 {
 
-		const importRelation: Relation = {
-			RelationName: "DataImportResource",
-			AddonUUID: client.AddonUUID,
-			AddonRelativeURL: '',
-			Name: SCHEMA_NAME,
-			Type: 'AddonAPI',
-			Source: 'adal',
-			Hidden: isHidden
-		};
+	const importRelation: Relation = {
+		RelationName: "DataImportResource",
+		AddonUUID: client.AddonUUID,
+		AddonRelativeURL: '',
+		Name: SurveysConstants.schemaNames.BASE_SURVEYS,
+		Type: 'AddonAPI',
+		Source: 'adal',
+		Hidden: isHidden
+	};
 
-		const exportRelation: Relation = {
-			RelationName: "DataExportResource",
-			AddonUUID: client.AddonUUID,
-			AddonRelativeURL: '',
-			Name: SCHEMA_NAME,
-			Type: 'AddonAPI',
-			Source: 'adal',
-			Hidden: isHidden
-		};
+	const exportRelation: Relation = {
+		RelationName: "DataExportResource",
+		AddonUUID: client.AddonUUID,
+		AddonRelativeURL: '',
+		Name: SurveysConstants.schemaNames.BASE_SURVEYS,
+		Type: 'AddonAPI',
+		Source: 'adal',
+		Hidden: isHidden
+	};
 
-		await upsertRelation(papiClient, importRelation);
-		await upsertRelation(papiClient, exportRelation);
+	await upsertRelation(papiClient, importRelation);
+	await upsertRelation(papiClient, exportRelation);
 }
 
 async function upsertRelation(papiClient: PapiClient, relation: Relation) 

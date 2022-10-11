@@ -10,8 +10,7 @@ The error Message is importent! it will be written in the audit log and help the
 
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { AddonDataScheme, PapiClient, Relation } from '@pepperi-addons/papi-sdk'
-import { SCHEMA_NAME } from 'surveys-shared';
-
+import { SurveysConstants } from 'surveys-shared';
 
 export async function install(client: Client, request: Request): Promise<any> 
 {
@@ -24,6 +23,8 @@ export async function install(client: Client, request: Request): Promise<any>
 		await createBaseSurveyTemplateSectionsSchema(papiClient, client);
 		await createBaseSurveyTemplatesSchema(papiClient, client);
 		
+		// Create base survey schemas.
+		await createBaseSurveyAnswersSchema(papiClient, client);
 		await createBaseSurveysSchema(papiClient, client);
 		
 		await createDimxRelations(client, papiClient);
@@ -103,6 +104,31 @@ async function createBaseSurveysSchema(papiClient: PapiClient, client: Client)
 			},
 		}
 	} as any; // Waiting for papi-sdk that supports Extends: https://github.com/Pepperi-Addons/papi-sdk/pull/138
+
+	await papiClient.addons.data.schemes.post(schema);
+}
+
+async function createBaseSurveyAnswersSchema(papiClient: PapiClient, client: Client) 
+{
+	const schema: AddonDataScheme = {
+		Name: SurveysConstants.schemaNames.BASE_SURVEY_ANSWERS,
+		Type: 'abstract',
+		AddonUUID: client.AddonUUID,
+		Fields: {
+			Key: {
+				Type: 'Resource',
+				Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_QUESTIONS,
+				AddonUUID: client.AddonUUID
+			},
+			Answer:
+			{
+				Type: "Object",
+				Fields: {
+				}
+			}
+		}
+
+	}
 
 	await papiClient.addons.data.schemes.post(schema);
 }

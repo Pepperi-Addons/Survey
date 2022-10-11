@@ -17,9 +17,25 @@ export async function install(client: Client, request: Request): Promise<any>
 {
     
 	const papiClient = createPapiClient(client);
-	await createSurveySchema(papiClient, client);
-	await createDimxRelations(client, papiClient);
-	return {success:true,resultObject:{}}
+	try
+	{
+		// Create base survey template schema, from inner most to outer most.
+		await createBaseSurveyTemplateQuestionsSchema(papiClient, client);
+		await createBaseSurveyTemplateSectionsSchema(papiClient, client);
+		await createBaseSurveyTemplatesSchema(papiClient, client);
+		
+		await createDimxRelations(client, papiClient);
+	}
+	catch(error)
+	{
+		if(error instanceof Error)
+		{
+			console.error(`Error during installation - ${error.message}.\n${error.stack ?? ''}`);
+		}
+		return { success: false, errorMessage: error instanceof Error ? error.message : "Unknown error occurred."};
+	}
+	
+	return { success: true, resultObject: {} }
 }
 
 export async function uninstall(client: Client, request: Request): Promise<any> 
@@ -62,44 +78,105 @@ async function createSurveySchema(papiClient: PapiClient, client: Client)
 		},
 		Fields:
         {
-        	Status: 
-            {
-            	Type: 'String'
-            },
-        	ExternalID: 
-            {
-            	Type: 'String'
-            },
-        	Template:
-            {
-            	Type: 'String'
-            },
-        	Answers:
-            {
-            	Type:'Array',
-            	Items:{
-            		Type:'Object',
-            		Fields:{
-            			Key:
-                        {
-                        	Type: 'String'
-                        },
-            			Value:
-                        {
-                        	Type: 'Object'
-                        }
-            		}
-            	}
-            },
-        	Creator:
-            {
-            	Type: 'String'
-            },
-        	Account:
-            {
-            	Type: 'String'
-            }
-        }
+async function createBaseSurveyTemplatesSchema(papiClient: PapiClient, client: Client) 
+{
+	const schema: AddonDataScheme = {
+		Name: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATES,
+		Type: 'abstract',
+		AddonUUID: client.AddonUUID,
+		Fields:
+		{
+			Name:
+			{
+				Type: 'String'
+			},
+			Description:
+			{
+				Type: 'String'
+			},
+			Active:
+			{
+				Type: 'Bool'
+			},
+			Sections:
+			{
+				Type: "Array",
+				Items: {
+					Type: 'ContainedResource',
+					Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_SECTIONS,
+					AddonUUID: client.AddonUUID
+				}
+			},
+		}
+	}
+
+	await papiClient.addons.data.schemes.post(schema);
+}
+
+async function createBaseSurveyTemplateSectionsSchema(papiClient: PapiClient, client: Client) 
+{
+	const schema: AddonDataScheme = {
+		Name: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_SECTIONS,
+		Type: 'abstract',
+		AddonUUID: client.AddonUUID,
+		Fields:
+		{
+			Name:
+			{
+				Type: 'String'
+			},
+			Title:
+			{
+				Type: 'String'
+			},
+			Description:
+			{
+				Type: 'String'
+			},
+			Questions:
+			{
+				Type: "Array",
+				Items: {
+					Type: 'ContainedResource',
+					Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_QUESTIONS,
+					AddonUUID: client.AddonUUID
+				}
+			},
+		}
+	}
+
+	await papiClient.addons.data.schemes.post(schema);
+}
+
+async function createBaseSurveyTemplateQuestionsSchema(papiClient: PapiClient, client: Client) 
+{
+	const schema: AddonDataScheme = {
+		Name: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_QUESTIONS,
+		Type: 'abstract',
+		AddonUUID: client.AddonUUID,
+		Fields:
+		{
+			Name:
+			{
+				Type: 'String'
+			},
+			Title:
+			{
+				Type: 'String'
+			},
+			Description:
+			{
+				Type: 'String'
+			},
+			Type:
+			{
+				Type: 'String'
+			},
+			Mandatory:
+			{
+				Type: 'Bool'
+			}
+		}
 	}
 
 	await papiClient.addons.data.schemes.post(schema);

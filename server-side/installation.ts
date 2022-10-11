@@ -24,6 +24,8 @@ export async function install(client: Client, request: Request): Promise<any>
 		await createBaseSurveyTemplateSectionsSchema(papiClient, client);
 		await createBaseSurveyTemplatesSchema(papiClient, client);
 		
+		await createBaseSurveysSchema(papiClient, client);
+		
 		await createDimxRelations(client, papiClient);
 	}
 	catch(error)
@@ -67,17 +69,44 @@ function createPapiClient(Client: Client)
 	});
 }
 
-async function createSurveySchema(papiClient: PapiClient, client: Client)
+async function createBaseSurveysSchema(papiClient: PapiClient, client: Client) 
 {
 	const schema: AddonDataScheme = {
-		Name: SCHEMA_NAME,
-		Type: 'data',
+		Name: SurveysConstants.schemaNames.BASE_SURVEYS,
+		Type: 'abstract',
 		AddonUUID: client.AddonUUID,
-		"SyncData": { 
-			"Sync": true,
+		DataSourceData: { // This property should be inherited from baseActivity. This is currently not implemented. https://pepperi.atlassian.net/browse/DI-21446
+			IndexName: SurveysConstants.DATA_SOURCE_INDEX_NAME
 		},
+
 		Fields:
-        {
+		{
+			ExternalID:
+			{
+				Type: 'String'
+			},
+			Template:
+			{
+				Type: 'Resource',
+				Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATES,
+				AddonUUID: client.AddonUUID
+			},
+			Answers:
+			{
+				Type: 'Array',
+				Items: {
+					Type: 'ContainedResource',
+					Resource: SurveysConstants.schemaNames.BASE_SURVEY_ANSWERS,
+					AddonUUID: client.AddonUUID
+				}
+
+			},
+		}
+	} as any; // Waiting for papi-sdk that supports Extends: https://github.com/Pepperi-Addons/papi-sdk/pull/138
+
+	await papiClient.addons.data.schemes.post(schema);
+}
+
 async function createBaseSurveyTemplatesSchema(papiClient: PapiClient, client: Client) 
 {
 	const schema: AddonDataScheme = {

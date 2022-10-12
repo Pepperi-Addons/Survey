@@ -16,6 +16,8 @@ export interface IApiService
     getSurveyByUniqueField(unique_field: string, value: any): Promise<Array<Survey>>;
 
     postSurvey(body: Survey): Promise<Survey>;
+
+    searchSurveys(body: any): Promise<Array<Survey>>;
 }
 
 export default IApiService;

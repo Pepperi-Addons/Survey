@@ -43,5 +43,11 @@ export declare class SurveyService {
      * throws an error if mandatory fields are missing from the request body
      */
     validatePostMandatoryFields(): Promise<void>;
+    /**
+     * Similar to getSurveys
+     * @returns An array of surveys that match the parametesr of the request body
+     */
+    search(): Promise<Survey[]>;
+    validateSearchRequest(): void;
 }
 export default SurveyService;

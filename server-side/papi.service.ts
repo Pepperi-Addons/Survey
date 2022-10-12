@@ -35,6 +35,11 @@ export class PapiService implements IApiService
         return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).find(findOptions);
     }
 
+    searchSurveys(body: any): Promise<Array<Survey>>
+    {
+        return this.papiClient.post(`/addons/data/search/${this.client.AddonUUID}/${SCHEMA_NAME}`, body);
+    }
+
     postSurvey(body: Survey): Promise<Survey>
     {
 		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).upsert(body);

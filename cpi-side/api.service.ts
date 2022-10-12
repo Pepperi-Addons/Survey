@@ -5,6 +5,10 @@ import config from '../addon.config.json'
 
 export class ApiService implements IApiService
 {
+    searchSurveys(body: any): Promise<Survey[]>
+    {
+        throw new Error("Method not implemented.");
+    }
     async getSurveys(findOptions: FindOptions): Promise<Array<Survey>>
     {
         throw new Error("Method not implemented.");

@@ -122,17 +122,42 @@ class SurveyService {
             console.error(errorMessage);
             throw new Error(errorMessage);
         }
-        if (!this.request.body.Creator || !this.request.body.Template) {
-            // Creator field is mandatory on creation. Ensure a survey exists, else throw an error.
+        if (!this.request.body.Creator || !this.request.body.Template || !this.request.body.Account) {
+            // Creator, Template and Account fields are mandatory on creation. Ensure a survey exists, else throw an error.
             try {
                 await this.getSurveyByKey(this.request.body.Key);
             }
             catch (error) {
-                // Survey not found and creator field is mandatory. Throw an error.
-                const errorMessage = `The survey with key '${this.request.body.Key}' does not exist. The Creator and Template fields are mandatory on creation.`;
+                // Survey not found and Creator, Template and Account fields are mandatory. Throw an error.
+                const errorMessage = `The survey with key '${this.request.body.Key}' does not exist. The Creator, Template and Account fields are mandatory on creation.`;
                 console.error(errorMessage);
                 throw new Error(errorMessage);
             }
+        }
+    }
+    /**
+     * Similar to getSurveys
+     * @returns An array of surveys that match the parametesr of the request body
+     */
+    search() {
+        this.validateSearchRequest();
+        return this.iApiService.searchSurveys(this.request.body);
+    }
+    validateSearchRequest() {
+        if (this.request.body.UniqueFieldID && !constants_1.SurveysConstants.UNIQUE_FIELDS.includes(this.request.body.UniqueFieldID)) {
+            const errorMessage = `The passed UniqueFieldID is not supported: '${this.request.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(constants_1.SurveysConstants.UNIQUE_FIELDS)}`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+        if (this.request.body.KeyList && (this.request.body.UniqueFieldID || this.request.body.UniqueFieldList)) {
+            const errorMessage = `Sending both KeyList and UniqueFieldList is not supported.`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+        if (this.request.body.UniqueFieldList && !this.request.body.UniqueFieldID) {
+            const errorMessage = `Missing UniqueFieldID parameter.`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
         }
     }
 }

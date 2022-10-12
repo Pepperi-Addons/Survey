@@ -1,6 +1,6 @@
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
-import { IApiService, Survey, SurveysConstants } from 'surveys-shared';
+import { IApiService, SurveysConstants, Survey } from 'surveys-shared';
 
 export class PapiService implements IApiService
 {
@@ -37,6 +37,11 @@ export class PapiService implements IApiService
 	{
 		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SurveysConstants.schemaNames.BASE_SURVEYS).upsert(body);
 	}
+
+    searchSurveys(body: any): Promise<Array<Survey>>
+    {
+        return this.papiClient.post(`/addons/data/search/${this.client.AddonUUID}/${SurveysConstants.schemaNames.BASE_SURVEYS}`, body);
+    }
 }
 
 export default PapiService;

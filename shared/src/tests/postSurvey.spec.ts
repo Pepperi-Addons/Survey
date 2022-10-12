@@ -71,7 +71,7 @@ describe('POST survey', async () => {
             return Promise.reject();
         }
 
-        await expect(survey.postSurvey()).to.be.rejectedWith(`The survey with key '${requestCopy.body.Key}' does not exist. The Creator and Template fields are mandatory on creation.`);
+        await expect(survey.postSurvey()).to.be.rejectedWith(`The survey with key '${requestCopy.body.Key}' does not exist. The Creator, Template and Account fields are mandatory on creation.`);
         
     });
 });

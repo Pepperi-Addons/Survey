@@ -1,47 +1,49 @@
 import { ADALGetParams, ADALUpsertParams } from "@pepperi-addons/client-api";
-import { FindOptions } from "@pepperi-addons/papi-sdk";
-import { IApiService, SurveysConstants, Survey } from "surveys-shared";
+import { AddonData, FindOptions } from "@pepperi-addons/papi-sdk";
+import { IApiService, Survey } from "surveys-shared";
 import config from '../addon.config.json'
 
-export class ApiService implements IApiService
+export class ApiService<T extends AddonData> implements IApiService<T>
 {
-    searchSurveys(body: any): Promise<Survey[]>
+    constructor(protected resourceName: string){}
+
+    searchResources(body: any): Promise<T[]>
     {
         throw new Error("Method not implemented.");
     }
-    async getSurveys(findOptions: FindOptions): Promise<Array<Survey>>
+    async getResources(findOptions: FindOptions): Promise<Array<T>>
     {
         throw new Error("Method not implemented.");
     }
 
-    async getSurveyByKey(key: string): Promise<Survey>
+    async getResourceByKey(key: string): Promise<T>
     {
         const adalGetParams: ADALGetParams = {
             addon: config.AddonUUID,
-            table: SurveysConstants.schemaNames.BASE_SURVEYS,
+            table: this.resourceName,
             key: key
         };
-        return await pepperi.api.adal.get(adalGetParams);
+        return await (pepperi.api.adal.get(adalGetParams) as unknown as Promise<T>);
     }
 
-    async getSurveyByUniqueField(unique_field: string, value: any): Promise<Survey[]>
+    async getResourceByUniqueField(unique_field: string, value: any): Promise<T[]>
     {
         throw new Error("Method not implemented.");
     }
 
-    async postSurvey(body: Survey): Promise<Survey> 
+    async postResource(body: Survey): Promise<T> 
     {
         if(typeof body.Key === 'string')
         {
             const adalPostParams: ADALUpsertParams = {
                 addon: config.AddonUUID,
-                table: SurveysConstants.schemaNames.BASE_SURVEYS,
+                table: this.resourceName,
                 object: body as any, // Survey.Key is string|undefined, but for all the validations I did, TS just didn't believe me,
                                      // and didn't want to accept the fact the it does in fact have a valid Key. So I used 'as any'...
                 indexedField: 'Key'
             };
 
-            return await pepperi.api.adal['upsert'](adalPostParams);
+            return await (pepperi.api.adal['upsert'](adalPostParams) as unknown as Promise<T>);
         }
         else
         {

@@ -1,9 +1,9 @@
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { Helper } from './helper';
 import PapiService from './papi.service';
-import { IApiService, SurveyService } from 'surveys-shared';
+import { IApiService, Survey, SurveysConstants, BaseSurveysService } from 'surveys-shared';
 
-export async function surveys(client: Client, request: Request) 
+export async function baseSurveys(client: Client, request: Request) 
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
 
@@ -11,13 +11,13 @@ export async function surveys(client: Client, request: Request)
 	{
 	case "GET":
 	{
-		const surveyService = getSurveyService(client, request);
-		return surveyService.getSurveys();
+		const baseSurveysService = getSurveyService(client, request);
+		return baseSurveysService.getSurveys();
 	}
 	case "POST":
 	{
-		const surveyService = getSurveyService(client, request);
-		return surveyService.postSurvey();
+		const baseSurveysService = getSurveyService(client, request);
+		return baseSurveysService.postSurvey();
 	}
 	default:
 	{
@@ -26,7 +26,7 @@ export async function surveys(client: Client, request: Request)
 	}
 }
 
-export async function get_surveys_by_key(client: Client, request: Request) 
+export async function get_baseSurveys_by_key(client: Client, request: Request) 
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
 
@@ -34,8 +34,8 @@ export async function get_surveys_by_key(client: Client, request: Request)
 	{
 	case "GET":
 	{
-		const surveyService = getSurveyService(client, request);
-		return surveyService.getSurveyByKey();
+		const baseSurveysService = getSurveyService(client, request);
+		return baseSurveysService.getSurveyByKey();
 	}
 	default:
 	{
@@ -44,7 +44,7 @@ export async function get_surveys_by_key(client: Client, request: Request)
 	}
 }
 
-export async function get_surveys_by_unique_field(client: Client, request: Request) 
+export async function get_baseSurveys_by_unique_field(client: Client, request: Request) 
 {
 	console.log(`Query received: ${JSON.stringify(request.query)}`);
 
@@ -52,8 +52,8 @@ export async function get_surveys_by_unique_field(client: Client, request: Reque
 	{
 	case "GET":
 	{
-		const surveyService = getSurveyService(client, request);
-        return surveyService.getSurveyByUniqueField();
+		const baseSurveysService = getSurveyService(client, request);
+		return baseSurveysService.getSurveyByUniqueField();
 	}
 	default:
 	{
@@ -62,14 +62,14 @@ export async function get_surveys_by_unique_field(client: Client, request: Reque
 	}
 }
 
-export async function surveys_search(client: Client, request: Request) 
+export async function baseSurveys_search(client: Client, request: Request) 
 {
 	switch (request.method) 
 	{
 	case "POST":
 	{
-		const surveyService = getSurveyService(client, request);
-        return surveyService.search();
+		const baseSurveysService = getSurveyService(client, request);
+		return baseSurveysService.search();
 	}
 	default:
 	{
@@ -80,8 +80,8 @@ export async function surveys_search(client: Client, request: Request)
 
 function getSurveyService(client: Client, request: Request)
 {
-    const papiClient = Helper.getPapiClient(client);
-    const papiService: IApiService = new PapiService(papiClient, client);
-    const surveyService = new SurveyService(request, papiService);
-    return surveyService;
+	const papiClient = Helper.getPapiClient(client);
+	const papiService: IApiService<Survey> = new PapiService(papiClient, client, SurveysConstants.schemaNames.BASE_SURVEYS);
+	const baseSurveysService = new BaseSurveysService(request, papiService);
+	return baseSurveysService;
 }

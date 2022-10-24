@@ -1,10 +1,10 @@
 import { Request } from '@pepperi-addons/debug-server';
 import { Survey } from './types';
 import IApiService from './iApiService';
-export declare class SurveyService {
+export declare class BaseSurveysService {
     private request;
     private iApiService;
-    constructor(request: Request, iApiService: IApiService);
+    constructor(request: Request, iApiService: IApiService<Survey>);
     /**
      * Get surveys
      * @returns An array of surveys
@@ -50,4 +50,4 @@ export declare class SurveyService {
     search(): Promise<Survey[]>;
     validateSearchRequest(): void;
 }
-export default SurveyService;
+export default BaseSurveysService;

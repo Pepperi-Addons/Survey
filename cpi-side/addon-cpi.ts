@@ -1,5 +1,5 @@
 import { Request } from '@pepperi-addons/debug-server'
-import { IApiService, SurveyService } from 'surveys-shared';
+import { IApiService, Survey, SurveysConstants, BaseSurveysService } from 'surveys-shared';
 import { ApiService } from './api.service';
 import '@pepperi-addons/cpi-node';
 
@@ -38,7 +38,7 @@ router.get('/get_surveys_by_unique_field', async (req, res) => {
 
 function getSurveyService(request: Request)
 {
-    const papiService: IApiService = new ApiService();
-    const surveyService = new SurveyService(request, papiService);
+    const papiService: IApiService<Survey> = new ApiService<Survey>(SurveysConstants.schemaNames.BASE_SURVEYS);
+    const surveyService = new BaseSurveysService(request, papiService);
     return surveyService;
 }

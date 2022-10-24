@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SurveyService = void 0;
+exports.BaseSurveysService = void 0;
 const constants_1 = require("./constants");
-class SurveyService {
+class BaseSurveysService {
     constructor(request, iApiService) {
         this.request = request;
         this.iApiService = iApiService;
@@ -13,7 +13,7 @@ class SurveyService {
      */
     getSurveys() {
         const findOptions = this.buildFindOptionsFromRequestQuery();
-        return this.iApiService.getSurveys(findOptions);
+        return this.iApiService.getResources(findOptions);
     }
     /**
      * Build a FindOptions object from the request query
@@ -31,7 +31,7 @@ class SurveyService {
         this.validateGetSurveysByKeyRequest(requestedKey);
         let survey = {};
         try {
-            survey = await this.iApiService.getSurveyByKey(requestedKey);
+            survey = await this.iApiService.getResourceByKey(requestedKey);
         }
         catch (papiError) {
             if (papiError instanceof Error) {
@@ -63,7 +63,7 @@ class SurveyService {
             return this.getSurveyByKey(this.request.query.value);
         }
         else {
-            const res = await this.iApiService.getSurveyByUniqueField(this.request.query.unique_field, this.request.query.value);
+            const res = await this.iApiService.getResourceByUniqueField(this.request.query.unique_field, this.request.query.value);
             this.validateGetByUniqueFieldResult(res);
             return res[0];
         }
@@ -111,7 +111,7 @@ class SurveyService {
     }
     async postSurvey() {
         await this.validatePostMandatoryFields();
-        return await this.iApiService.postSurvey(this.request.body);
+        return await this.iApiService.postResource(this.request.body);
     }
     /**
      * throws an error if mandatory fields are missing from the request body
@@ -141,7 +141,7 @@ class SurveyService {
      */
     search() {
         this.validateSearchRequest();
-        return this.iApiService.searchSurveys(this.request.body);
+        return this.iApiService.searchResources(this.request.body);
     }
     validateSearchRequest() {
         if (this.request.body.UniqueFieldID && !constants_1.SurveysConstants.UNIQUE_FIELDS.includes(this.request.body.UniqueFieldID)) {
@@ -161,6 +161,6 @@ class SurveyService {
         }
     }
 }
-exports.SurveyService = SurveyService;
-exports.default = SurveyService;
+exports.BaseSurveysService = BaseSurveysService;
+exports.default = BaseSurveysService;
 //# sourceMappingURL=survey.service.js.map

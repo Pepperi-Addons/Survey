@@ -3,9 +3,9 @@ export declare const SurveysConstants: {
         BASE_ACTIVITIES: string;
         BASE_SURVEYS: string;
         BASE_SURVEY_TEMPLATES: string;
-        BASE_SURVEY_ANSWERS: string;
-        BASE_SURVEY_TEMPLATE_SECTIONS: string;
-        BASE_SURVEY_TEMPLATE_QUESTIONS: string;
+        SURVEY_ANSWERS: string;
+        SURVEY_TEMPLATE_SECTIONS: string;
+        SURVEY_TEMPLATE_QUESTIONS: string;
     };
     dependentAddonsUUIDs: {
         BASE_ACTIVITIES: string;

@@ -97,7 +97,7 @@ async function createBaseSurveysSchema(papiClient: PapiClient, client: Client)
 				Type: 'Array',
 				Items: {
 					Type: 'ContainedResource',
-					Resource: SurveysConstants.schemaNames.BASE_SURVEY_ANSWERS,
+					Resource: SurveysConstants.schemaNames.SURVEY_ANSWERS,
 					AddonUUID: client.AddonUUID
 				}
 
@@ -111,13 +111,13 @@ async function createBaseSurveysSchema(papiClient: PapiClient, client: Client)
 async function createBaseSurveyAnswersSchema(papiClient: PapiClient, client: Client) 
 {
 	const schema: AddonDataScheme = {
-		Name: SurveysConstants.schemaNames.BASE_SURVEY_ANSWERS,
-		Type: 'abstract',
+		Name: SurveysConstants.schemaNames.SURVEY_ANSWERS,
+		Type: 'contained',
 		AddonUUID: client.AddonUUID,
 		Fields: {
 			Key: {
 				Type: 'Resource',
-				Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_QUESTIONS,
+				Resource: SurveysConstants.schemaNames.SURVEY_TEMPLATE_QUESTIONS,
 				AddonUUID: client.AddonUUID
 			},
 			Answer:
@@ -158,7 +158,7 @@ async function createBaseSurveyTemplatesSchema(papiClient: PapiClient, client: C
 				Type: "Array",
 				Items: {
 					Type: 'ContainedResource',
-					Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_SECTIONS,
+					Resource: SurveysConstants.schemaNames.SURVEY_TEMPLATE_SECTIONS,
 					AddonUUID: client.AddonUUID
 				}
 			},
@@ -171,8 +171,8 @@ async function createBaseSurveyTemplatesSchema(papiClient: PapiClient, client: C
 async function createBaseSurveyTemplateSectionsSchema(papiClient: PapiClient, client: Client) 
 {
 	const schema: AddonDataScheme = {
-		Name: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_SECTIONS,
-		Type: 'abstract',
+		Name: SurveysConstants.schemaNames.SURVEY_TEMPLATE_SECTIONS,
+		Type: 'contained',
 		AddonUUID: client.AddonUUID,
 		Fields:
 		{
@@ -193,7 +193,7 @@ async function createBaseSurveyTemplateSectionsSchema(papiClient: PapiClient, cl
 				Type: "Array",
 				Items: {
 					Type: 'ContainedResource',
-					Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_QUESTIONS,
+					Resource: SurveysConstants.schemaNames.SURVEY_TEMPLATE_QUESTIONS,
 					AddonUUID: client.AddonUUID
 				}
 			},
@@ -206,8 +206,8 @@ async function createBaseSurveyTemplateSectionsSchema(papiClient: PapiClient, cl
 async function createBaseSurveyTemplateQuestionsSchema(papiClient: PapiClient, client: Client) 
 {
 	const schema: AddonDataScheme = {
-		Name: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATE_QUESTIONS,
-		Type: 'abstract',
+		Name: SurveysConstants.schemaNames.SURVEY_TEMPLATE_QUESTIONS,
+		Type: 'contained',
 		AddonUUID: client.AddonUUID,
 		Fields:
 		{

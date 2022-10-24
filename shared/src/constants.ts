@@ -4,9 +4,9 @@ export const SurveysConstants =
         BASE_ACTIVITIES: "baseActivities",
         BASE_SURVEYS: "baseSurveys",
         BASE_SURVEY_TEMPLATES: "baseSurveyTemplates",
-        BASE_SURVEY_ANSWERS: "baseSurveyAnswers",
-        BASE_SURVEY_TEMPLATE_SECTIONS: "baseSurveyTemplateSections",
-        BASE_SURVEY_TEMPLATE_QUESTIONS: "baseSurveyTemplateQuestions"
+        SURVEY_ANSWERS: "surveyAnswers",
+        SURVEY_TEMPLATE_SECTIONS: "surveyTemplateSections",
+        SURVEY_TEMPLATE_QUESTIONS: "surveyTemplateQuestions"
 
     },
     dependentAddonsUUIDs: {

@@ -1,11 +1,10 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { MockApiService } from './consts';
-import { validateArraysHaveSameObjects } from './consts';
+import { MockApiService, MockGenericResourceServiceBuilder, validateArraysHaveSameObjects } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { FindOptions } from '@pepperi-addons/papi-sdk';
-import { BaseSurveysService } from '..';
+import { GenericResourceService } from '..';
 
 
 chai.use(promised);
@@ -33,7 +32,9 @@ describe('GET surveys', async () =>
 			include_deleted: true,
 			where: 'ExternalID = "test"'
 		}
-		const survey = new BaseSurveysService(requestCopy, papiService);
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
+
 		papiService.getResources = async (findOptions: FindOptions) => 
 		{
 			expect(findOptions.page).to.equal(requestCopy.query.page);
@@ -46,7 +47,7 @@ describe('GET surveys', async () =>
 			return [];
 		}
 
-		await survey.getSurveys();
+		await survey.getResources();
         
 	});
 });

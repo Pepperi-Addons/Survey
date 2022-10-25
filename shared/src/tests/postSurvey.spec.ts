@@ -1,9 +1,9 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { MockApiService } from './consts';
+import { MockApiService, MockGenericResourceServiceBuilder } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
-import { Survey, BaseSurveysService } from '..';
+import { Survey, GenericResourceService } from '..';
 
 
 chai.use(promised);
@@ -28,8 +28,9 @@ describe('POST survey', async () =>
 			Key: '00000000-0000-0000-0000-000000000011',
 			Creator: '00000000-0000-0000-0000-000000000011',
 		}
-		const survey = new BaseSurveysService(requestCopy, papiService);
-        
+
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
         
 		papiService.postResource = async (body: Survey) => 
 		{
@@ -39,7 +40,7 @@ describe('POST survey', async () =>
 			return {};
 		}
 
-		await survey.postSurvey();
+		await survey.postResource();
         
 	});
 
@@ -53,9 +54,10 @@ describe('POST survey', async () =>
 		}
 		const papiService = new MockApiService();
 
-		const survey = new BaseSurveysService(requestCopy, papiService);
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
 
-		await expect(survey.postSurvey()).to.be.rejectedWith(`The request body must contain a Key parameter.`);
+		await expect(survey.postResource()).to.be.rejectedWith(`The request body must contain a Key parameter.`);
         
 	});
 
@@ -67,16 +69,18 @@ describe('POST survey', async () =>
 			Key: '00000000-0000-0000-0000-000000000011',
 		}
 		const papiService = new MockApiService();
-		const survey = new BaseSurveysService(requestCopy, papiService);
+		
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
 
 		// postSurvey uses getSurveyByKey to check if a survey exists.
 		// If no Creator is provided and the survey doesn't exist, it should throw an error.
-		survey.getSurveyByKey = async (key: string) => 
+		survey.getResourceByKey = async (key: string) => 
 		{
 			return Promise.reject();
 		}
 
-		await expect(survey.postSurvey()).to.be.rejectedWith(`The survey with key '${requestCopy.body.Key}' does not exist. The Creator, Template and Account fields are mandatory on creation.`);
+		await expect(survey.postResource()).to.be.rejectedWith(`The survey with key '${requestCopy.body.Key}' does not exist. The following fields are mandatory on creation: ["Creator","Template","Account"]`);
         
 	});
 });

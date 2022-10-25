@@ -61,12 +61,12 @@
             "type": "node",
             "request": "launch",
             "name": "Mocha All",
-            "program": "${workspaceFolder}/server-side/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceFolder}/shared/node_modules/mocha/bin/_mocha",
             "args": [
                 "-R",
                 "mochawesome",
                 "--colors",
-                "${workspaceFolder}/server-side/build/server-side/tests/*.js",
+                "${workspaceFolder}/shared/lib/tests/*.js",
                 "--no-timeouts"
             ],
             "console": "integratedTerminal",

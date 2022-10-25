@@ -1,10 +1,10 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { MockApiService, validateArraysHaveSameObjects } from './consts';
+import { MockApiService, MockGenericResourceServiceBuilder, validateArraysHaveSameObjects } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
-import  BaseSurveysService from '../survey.service';
 import { SurveysConstants } from '../constants';
+import GenericResourceService from '../genericResource.service';
 
 chai.use(promised);
 
@@ -32,7 +32,10 @@ describe('Search Survey', async () =>
 			KeyList: ['key1', 'key2'],
 			Fields: ['field1', 'field2'],
 		}
-		const survey = new BaseSurveysService(requestCopy, papiService);
+		
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
+
 		papiService.searchResources = async (body: any) => 
 		{
 			expect(body.Where).to.equal(requestCopy.body.Where);
@@ -57,9 +60,12 @@ describe('Search Survey', async () =>
 		requestCopy.body = {
 			UniqueFieldID: 'UNSUPPORTED',
 		}
-		const survey = new BaseSurveysService(requestCopy, papiService);
 
-		expect(() => survey.search()).to.throw(`The passed UniqueFieldID is not supported: '${requestCopy.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(SurveysConstants.UNIQUE_FIELDS)}`);
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
+
+		await expect(survey.search()).to.be.rejectedWith(`The passed UniqueFieldID is not supported: '${requestCopy.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(SurveysConstants.UNIQUE_FIELDS)}`);
+
 	});
 
 	it('should throw a "Sending both KeyList and UniqueFieldList is not supported." exception', async () => 
@@ -70,9 +76,11 @@ describe('Search Survey', async () =>
 			UniqueFieldList: ['key1', 'key2'],
 			KeyList: ['key1', 'key2'],
 		}
-		const survey = new BaseSurveysService(requestCopy, papiService);
+		
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
 
-		expect(() => survey.search()).to.throw(`Sending both KeyList and UniqueFieldList is not supported.`);
+		await expect(survey.search()).to.be.rejectedWith(`Sending both KeyList and UniqueFieldList is not supported.`);
         
 	});
 
@@ -83,9 +91,11 @@ describe('Search Survey', async () =>
 		requestCopy.body = {
 			UniqueFieldList: ['key1', 'key2'],
 		}
-		const survey = new BaseSurveysService(requestCopy, papiService);
+		
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
 
-		expect(() => survey.search()).to.throw(`Missing UniqueFieldID parameter.`);
+		await expect(survey.search()).to.be.rejectedWith(`Missing UniqueFieldID parameter.`);
         
 	});
 });

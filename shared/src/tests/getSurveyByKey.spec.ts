@@ -1,9 +1,9 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { MockApiService } from './consts';
+import { MockApiService, MockGenericResourceServiceBuilder } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
-import { BaseSurveysService } from '..';
+import { GenericResourceService } from '..';
 
 chai.use(promised);
 
@@ -27,7 +27,10 @@ describe('GET survey by key', async () =>
 		requestCopy.query = {
 			key:'myKey'
 		}
-		const survey = new BaseSurveysService(requestCopy, papiService);
+
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
+
 		papiService.getResourceByKey = async (key: string) => 
 		{
 			expect(key).to.equal(requestCopy.query.key);
@@ -36,7 +39,7 @@ describe('GET survey by key', async () =>
 			return [];
 		}
 
-		await survey.getSurveyByKey();
+		await survey.getResourceByKey();
         
 	});
 
@@ -47,13 +50,15 @@ describe('GET survey by key', async () =>
 		requestCopy.query = {
 			key:'myKey'
 		}
-		const survey = new BaseSurveysService(requestCopy, papiService);
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
+
 		papiService.getResourceByKey = async (key: string) => 
 		{
 			throw new Error();
 		}
 
-		await expect(survey.getSurveyByKey()).to.be.rejectedWith(`Could not find a survey with requested key '${requestCopy.query.key}'`);
+		await expect(survey.getResourceByKey()).to.be.rejectedWith(`Could not find a survey with requested key '${requestCopy.query.key}'`);
         
 	});
 
@@ -62,9 +67,10 @@ describe('GET survey by key', async () =>
 
 		const requestCopy = { ...request };
 		requestCopy.query = {}
-		const survey = new BaseSurveysService(requestCopy, papiService);
+		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
+		const survey = new GenericResourceService(mockServiceBuilder);
 
-		await expect(survey.getSurveyByKey()).to.be.rejectedWith(`The request query must contain a key parameter.`);
+		await expect(survey.getResourceByKey()).to.be.rejectedWith(`The request query must contain a key parameter.`);
         
 	});
 });

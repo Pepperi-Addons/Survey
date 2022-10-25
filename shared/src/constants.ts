@@ -14,6 +14,12 @@ export const SurveysConstants =
 	},
 	UNIQUE_FIELDS: ["Key"],
 	DATA_SOURCE_INDEX_NAME: "baseActivities",
+	MandatoryFields : ["Creator", "Template", "Account"]
+}
 
-    
+export const SurveyTemplatesConstants = 
+{
+	UNIQUE_FIELDS: ["Key"],
+	MandatoryFields : []
+
 }

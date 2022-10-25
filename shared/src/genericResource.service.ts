@@ -1,21 +1,30 @@
-import { FindOptions } from '@pepperi-addons/papi-sdk'
+import { AddonData, FindOptions } from '@pepperi-addons/papi-sdk'
 import { Request } from '@pepperi-addons/debug-server';
-import { SurveysConstants } from './constants';
-import { Survey } from './types';
+import { ResourceServiceBuilder } from './types';
 import IApiService from './iApiService';
 
-export class BaseSurveysService 
+export class GenericResourceService 
 {
-	constructor(private request: Request, private iApiService: IApiService<Survey>)
-	{
+	protected request: Request;
+	protected iApiService: IApiService<AddonData>;
+	protected resourceUniqueFields: Array<string>
+	protected resourceName: string;
+	protected resourceCreationMandatoryFields: Array<string>;
 
+	constructor(resourceServiceBuilder: ResourceServiceBuilder)
+	{
+		this.request = resourceServiceBuilder.request;
+		this.iApiService = resourceServiceBuilder.iApiService;
+		this.resourceName = resourceServiceBuilder.resourceName;
+		this.resourceUniqueFields = resourceServiceBuilder.resourceUniqueFields;
+		this.resourceCreationMandatoryFields = resourceServiceBuilder.resourceCreationMandatoryFields;
 	}
 
 	/**
-     * Get surveys
-     * @returns An array of surveys
+     * Get resources
+     * @returns An array of resources
      */
-	getSurveys(): Promise<Array<Survey>>
+	getResources(): Promise<Array<AddonData>>
 	{
 		const findOptions: FindOptions = this.buildFindOptionsFromRequestQuery();
 
@@ -40,36 +49,36 @@ export class BaseSurveysService
 
 	/**
      * 
-     * @returns A survey by key
+     * @returns A resource by key
      */
-	async getSurveyByKey(key?: string)
+	async getResourceByKey(key?: string)
 	{
 		const requestedKey = key ?? this.request.query.key;
-		this.validateGetSurveysByKeyRequest(requestedKey);
+		this.validateGetResourceByKeyRequest(requestedKey);
 
-		let survey: Survey = {};
+		let resource: AddonData = {};
 		try
 		{
-			survey = await this.iApiService.getResourceByKey(requestedKey);
+			resource = await this.iApiService.getResourceByKey(requestedKey);
 		}
 		catch(papiError)
 		{
 			if(papiError instanceof Error)
 			{
 				console.log(papiError);
-				const error :any = new Error(`Could not find a survey with requested key '${requestedKey}'`);
+				const error :any = new Error(`Could not find a ${this.resourceName} with requested key '${requestedKey}'`);
 				error.code = 404;
 
 				throw error;
 			}
 		}
-		return survey;
+		return resource;
 	}
 
 	/**
-     * Validate the request query for getSurveysByKey
+     * Validate the request query for getResourceByKey
      */
-	validateGetSurveysByKeyRequest(key: string)
+	validateGetResourceByKeyRequest(key: string)
 	{
 		if(!key)
 		{
@@ -81,19 +90,19 @@ export class BaseSurveysService
 
 	/**
      * 
-     * @returns A survey by unique field
+     * @returns A resource by unique field
      */
-	async getSurveyByUniqueField(): Promise<Survey>
+	async getResourceByUniqueField(): Promise<AddonData>
 	{
-		this.validateGetSurveyByUniqueFieldRequest();
+		this.validateGetResourceByUniqueFieldRequest();
 
 		if(this.request.query.unique_field === 'Key')
 		{
-			return this.getSurveyByKey(this.request.query.value);
+			return this.getResourceByKey(this.request.query.value);
 		}
 		else
 		{
-			const res: Array<Survey> = await this.iApiService.getResourceByUniqueField(this.request.query.unique_field, this.request.query.value);
+			const res: Array<AddonData> = await this.iApiService.getResourceByUniqueField(this.request.query.unique_field, this.request.query.value);
             
 			this.validateGetByUniqueFieldResult(res);
 
@@ -105,11 +114,11 @@ export class BaseSurveysService
      * Throws an exception in case the number of results is not 1.
      * @param res the list of results to validate
      */
-	private validateGetByUniqueFieldResult(res: Survey[])
+	private validateGetByUniqueFieldResult(res: AddonData[])
 	{
 		if (res.length === 0) 
 		{
-			const errorMessage = `Could not find a survey with unique_field: '${this.request.query.unique_field}' and value '${this.request.query.value}'`;
+			const errorMessage = `Could not find a ${this.resourceName} with unique_field: '${this.request.query.unique_field}' and value '${this.request.query.value}'`;
 			console.error(errorMessage);
 			const error: any = new Error(errorMessage);
 			error.code = 404;
@@ -119,7 +128,7 @@ export class BaseSurveysService
 		if (res.length > 1) 
 		{
 			// Something super strange happened...
-			const errorMessage = `Found more than one survey with unique_field: '${this.request.query.unique_field}' and value '${this.request.query.value}'`;
+			const errorMessage = `Found more than one ${this.resourceName} with unique_field: '${this.request.query.unique_field}' and value '${this.request.query.value}'`;
 			console.error(errorMessage);
 			const error: any = new Error(errorMessage);
 			error.code = 404;
@@ -130,7 +139,7 @@ export class BaseSurveysService
 	/**
      * Validate the request query for getSurveyByUniqueField 
      */
-	validateGetSurveyByUniqueFieldRequest()
+	validateGetResourceByUniqueFieldRequest()
 	{
 		if(!this.request.query.unique_field)
 		{
@@ -146,15 +155,15 @@ export class BaseSurveysService
 			throw new Error(errorMessage);
 		}
 
-		if(!SurveysConstants.UNIQUE_FIELDS.includes(this.request.query.unique_field))
+		if(!this.resourceUniqueFields.includes(this.request.query.unique_field))
 		{
-			const errorMessage = `The unique_field parameter must be one of the following: '${SurveysConstants.UNIQUE_FIELDS.join(', ')}'.`;
+			const errorMessage = `The unique_field parameter must be one of the following: '${this.resourceUniqueFields.join(', ')}'.`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
 		}
 	}
              
-	async postSurvey()
+	async postResource() : Promise<AddonData>
 	{
 		await this.validatePostMandatoryFields();
 		return await this.iApiService.postResource(this.request.body);
@@ -172,17 +181,18 @@ export class BaseSurveysService
 			throw new Error(errorMessage);
 		}
 
-		if(!this.request.body.Creator || !this.request.body.Template || !this.request.body.Account)
+		const isRequestMissingCreationMandatoryField = this.resourceCreationMandatoryFields.some(mandatoryField => !Object.keys(this.request.body).includes(mandatoryField));
+		if(isRequestMissingCreationMandatoryField)
 		{
-			// Creator, Template and Account fields are mandatory on creation. Ensure a survey exists, else throw an error.
+			// Ensure a resource exists, else throw an error.
 			try
 			{
-				await this.getSurveyByKey(this.request.body.Key);
+				await this.getResourceByKey(this.request.body.Key);
 			}
 			catch(error)
 			{
-				// Survey not found and Creator, Template and Account fields are mandatory. Throw an error.
-				const errorMessage = `The survey with key '${this.request.body.Key}' does not exist. The Creator, Template and Account fields are mandatory on creation.`;
+				// Resource not found and request is missing mandatory creation fields. Throw an error.
+				const errorMessage = `The ${this.resourceName} with key '${this.request.body.Key}' does not exist. The following fields are mandatory on creation: ${JSON.stringify(this.resourceCreationMandatoryFields)}`;
 				console.error(errorMessage);
 				throw new Error(errorMessage);
 			}
@@ -191,20 +201,20 @@ export class BaseSurveysService
 
     
 	/**
-     * Similar to getSurveys 
-     * @returns An array of surveys that match the parametesr of the request body
+     * Similar to getResources 
+     * @returns An array of resources that match the parameters of the request body
      */
-	search()
+	async search(): Promise<AddonData[]>
 	{
 		this.validateSearchRequest();
-		return this.iApiService.searchResources(this.request.body);
+		return await this.iApiService.searchResources(this.request.body);
 	}
  
 	validateSearchRequest() 
 	{
-		if(this.request.body.UniqueFieldID && !SurveysConstants.UNIQUE_FIELDS.includes(this.request.body.UniqueFieldID))
+		if(this.request.body.UniqueFieldID && !this.resourceUniqueFields.includes(this.request.body.UniqueFieldID))
 		{
-			const errorMessage = `The passed UniqueFieldID is not supported: '${this.request.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(SurveysConstants.UNIQUE_FIELDS)}`;
+			const errorMessage = `The passed UniqueFieldID is not supported: '${this.request.body.UniqueFieldID}'. Supported UniqueFieldID values are: ${JSON.stringify(this.resourceUniqueFields)}`;
 			console.error(errorMessage);
 			throw new Error(errorMessage);
 		}
@@ -225,4 +235,4 @@ export class BaseSurveysService
 	}
 }
 
-export default BaseSurveysService;
+export default GenericResourceService;

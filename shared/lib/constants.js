@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SurveysConstants = void 0;
+exports.SurveyTemplatesConstants = exports.SurveysConstants = void 0;
 exports.SurveysConstants = {
     schemaNames: {
         BASE_ACTIVITIES: "baseActivities",
@@ -15,5 +15,10 @@ exports.SurveysConstants = {
     },
     UNIQUE_FIELDS: ["Key"],
     DATA_SOURCE_INDEX_NAME: "baseActivities",
+    MandatoryFields: ["Creator", "Template", "Account"]
+};
+exports.SurveyTemplatesConstants = {
+    UNIQUE_FIELDS: ["Key"],
+    MandatoryFields: []
 };
 //# sourceMappingURL=constants.js.map

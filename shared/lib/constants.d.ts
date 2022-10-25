@@ -12,4 +12,9 @@ export declare const SurveysConstants: {
     };
     UNIQUE_FIELDS: string[];
     DATA_SOURCE_INDEX_NAME: string;
+    MandatoryFields: string[];
+};
+export declare const SurveyTemplatesConstants: {
+    UNIQUE_FIELDS: string[];
+    MandatoryFields: never[];
 };

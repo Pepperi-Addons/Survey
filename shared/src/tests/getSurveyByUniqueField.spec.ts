@@ -1,25 +1,15 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
-import { mockClient } from './consts';
+import { MockApiService } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
-import { PapiClient } from '@pepperi-addons/papi-sdk';
-import  SurveyService from '../survey.service';
-import { UNIQUE_FIELDS } from '../constants';
+import { SurveyService, UNIQUE_FIELDS } from '..';
 
 chai.use(promised);
 
 describe('GET survey by unique fields', async () => {
 
-    const papiClient = new PapiClient({
-        baseURL: mockClient.BaseURL,
-        token: mockClient.OAuthAccessToken,
-        addonUUID: mockClient.AddonUUID,
-        actionUUID: mockClient.ActionUUID,
-    });
-
-    const papiService = new PapiService(papiClient, mockClient);
+    const papiService = new MockApiService();
 
     const request: Request = {
         method: 'GET',
@@ -35,7 +25,7 @@ describe('GET survey by unique fields', async () => {
             unique_field: 'Key',
             value: 'myKey'
         }
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
         papiService.getSurveyByKey = async (key: string) => {
             expect(key).to.equal(requestCopy.query.value);
 
@@ -47,13 +37,13 @@ describe('GET survey by unique fields', async () => {
         
     });
 
-    it('should throw a "The request query must contain a unique_field parameter." excpetion', async () => {
+    it('should throw a "The request query must contain a unique_field parameter." exception', async () => {
 
         const requestCopy = { ...request };
         requestCopy.query = {
             value: 'myKey'
         }
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
         papiService.getSurveyByKey = async (key: string) => {
             throw new Error();
         }
@@ -62,26 +52,26 @@ describe('GET survey by unique fields', async () => {
         
     });
 
-    it('should throw a "The request query must contain a value parameter." excpetion', async () => {
+    it('should throw a "The request query must contain a value parameter." exception', async () => {
 
         const requestCopy = { ...request };
         requestCopy.query = {
             unique_field: 'Key'
         }
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
 
         await expect(survey.getSurveyByUniqueField()).to.be.rejectedWith(`The request query must contain a value parameter.`);
         
     });
 
-    it('should throw a "The unique_field parameter must be one of the following" excpetion', async () => {
+    it('should throw a "The unique_field parameter must be one of the following" exception', async () => {
 
         const requestCopy = { ...request };
         requestCopy.query = {
             unique_field: 'UNSUPPORTED',
             value: "dont care..."
         }
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
 
         await expect(survey.getSurveyByUniqueField()).to.be.rejectedWith(`The unique_field parameter must be one of the following: '${UNIQUE_FIELDS.join(', ')}'.`);
         

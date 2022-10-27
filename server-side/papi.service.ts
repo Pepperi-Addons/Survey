@@ -1,9 +1,10 @@
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
-import { SCHEMA_NAME } from './constants';
-import { Survey } from './types';
+import { IApiService } from 'surveys-shared';
+import { SCHEMA_NAME } from 'surveys-shared';
+import { Survey } from 'surveys-shared';
 
-export class PapiService 
+export class PapiService implements IApiService
 {
 	constructor(protected papiClient: PapiClient, protected client: Client) 
 	{}

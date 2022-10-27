@@ -1,23 +1,15 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
-import { mockClient } from './consts';
+import { MockApiService } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
-import  SurveyService from '../survey.service';
-import { Survey } from '../types';
+import { Survey, SurveyService } from '..';
+
 
 chai.use(promised);
 
 describe('POST survey', async () => {
-
-    const papiClient = new PapiClient({
-        baseURL: mockClient.BaseURL,
-        token: mockClient.OAuthAccessToken,
-        addonUUID: mockClient.AddonUUID,
-        actionUUID: mockClient.ActionUUID,
-    });
 
     const request: Request = {
         method: 'POST',
@@ -29,13 +21,13 @@ describe('POST survey', async () => {
     it('create a new survey', async () => {
 
         const requestCopy = { ...request };
-        const papiService = new PapiService(papiClient, mockClient);
+        const papiService = new MockApiService();
 
         requestCopy.body = {
             Key: '00000000-0000-0000-0000-000000000011',
             Creator: '00000000-0000-0000-0000-000000000011',
         }
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
         
         
         papiService.postSurvey = async (body: Survey) => {
@@ -49,29 +41,29 @@ describe('POST survey', async () => {
         
     });
 
-    it('should throw a "The request body must contain a Key parameter." excpetion', async () => {
+    it('should throw a "The request body must contain a Key parameter." exception', async () => {
 
         
         const requestCopy = { ...request };
         requestCopy.body = {
             Creator: '00000000-0000-0000-0000-000000000011',
         }
-        const papiService = new PapiService(papiClient, mockClient);
+        const papiService = new MockApiService();
 
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
 
         await expect(survey.postSurvey()).to.be.rejectedWith(`The request body must contain a Key parameter.`);
         
     });
 
-    it('should throw a "creator field is mandatory on creation" excpetion', async () => {
+    it('should throw a "creator and template fields are mandatory on creation" exception', async () => {
 
         const requestCopy = { ...request };
         requestCopy.body = {
             Key: '00000000-0000-0000-0000-000000000011',
         }
-        const papiService = new PapiService(papiClient, mockClient);
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const papiService = new MockApiService();
+        const survey = new SurveyService(requestCopy, papiService);
 
         // postSurvey uses getSurveyByKey to check if a survey exists.
         // If no Creator is provided and the survey doesn't exist, it should throw an error.
@@ -79,7 +71,7 @@ describe('POST survey', async () => {
             return Promise.reject();
         }
 
-        await expect(survey.postSurvey()).to.be.rejectedWith(`The survey with key '${requestCopy.body.Key}' does not exist. The creator field is mandatory on creation.`);
+        await expect(survey.postSurvey()).to.be.rejectedWith(`The survey with key '${requestCopy.body.Key}' does not exist. The Creator, Template and Account fields are mandatory on creation.`);
         
     });
 });

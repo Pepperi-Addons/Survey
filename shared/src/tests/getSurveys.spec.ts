@@ -1,24 +1,18 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import PapiService from '../papi.service';
-import { mockClient, validateArraysHaveSameObjects } from './consts';
+import { MockApiService } from './consts';
+import { validateArraysHaveSameObjects } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
-import  SurveyService from '../survey.service';
+import { SurveyService } from '..';
+
 
 chai.use(promised);
 
 describe('GET surveys', async () => {
 
-    const papiClient = new PapiClient({
-        baseURL: mockClient.BaseURL,
-        token: mockClient.OAuthAccessToken,
-        addonUUID: mockClient.AddonUUID,
-        actionUUID: mockClient.ActionUUID,
-    });
-
-    const papiService = new PapiService(papiClient, mockClient);
+    const papiService = new MockApiService();
 
     const request: Request = {
         method: 'GET',
@@ -37,7 +31,7 @@ describe('GET surveys', async () => {
             include_deleted: true,
             where: 'ExternalID = "test"'
         }
-        const survey = new SurveyService(mockClient ,requestCopy, papiService);
+        const survey = new SurveyService(requestCopy, papiService);
         papiService.getSurveys = async (findOptions: FindOptions) => {
             expect(findOptions.page).to.equal(requestCopy.query.page);
             expect(findOptions.page_size).to.equal(requestCopy.query.page_size);

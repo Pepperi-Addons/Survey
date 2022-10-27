@@ -1,25 +1,25 @@
 import { FindOptions } from '@pepperi-addons/papi-sdk'
-import { Client, Request } from '@pepperi-addons/debug-server';
+import { Request } from '@pepperi-addons/debug-server';
 import { UNIQUE_FIELDS } from './constants';
 import { Survey } from './types';
-import PapiService from './papi.service';
+import IApiService from './iApiService';
 
-class SurveyService 
+export class SurveyService 
 {
-	constructor(private client: Client, private request: Request, private papiService: PapiService)
+	constructor(private request: Request, private iApiService: IApiService)
 	{
 
 	}
 
 	/**
-     * Get surveys from PAPI
+     * Get surveys
      * @returns An array of surveys
      */
 	getSurveys(): Promise<Array<Survey>>
 	{
 		const findOptions: FindOptions = this.buildFindOptionsFromRequestQuery();
 
-		return this.papiService.getSurveys(findOptions);
+		return this.iApiService.getSurveys(findOptions);
 	}
 
 	/**
@@ -50,7 +50,7 @@ class SurveyService
         let survey: Survey = {};
         try
         {
-            survey = await this.papiService.getSurveyByKey(requestedKey);
+            survey = await this.iApiService.getSurveyByKey(requestedKey);
         }
         catch(papiError)
         {
@@ -93,7 +93,7 @@ class SurveyService
         }
         else
         {
-            const res: Array<Survey> = await this.papiService.getSurveyByUniqueField(this.request.query.unique_field, this.request.query.value);
+            const res: Array<Survey> = await this.iApiService.getSurveyByUniqueField(this.request.query.unique_field, this.request.query.value);
             
             this.validateGetByUniqueFieldResult(res);
 
@@ -155,7 +155,7 @@ class SurveyService
 	async postSurvey()
 	{
 		await this.validatePostMandatoryFields();
-		return await this.papiService.postSurvey(this.request.body);
+		return await this.iApiService.postSurvey(this.request.body);
 	}
 
 	/**
@@ -170,17 +170,17 @@ class SurveyService
 			throw new Error(errorMessage);
 		}
 
-		if(!this.request.body.Creator)
+		if(!this.request.body.Creator || !this.request.body.Template || !this.request.body.Account)
 		{
-			// Creator field is mandatory on creation. Ensure a survey exists, else throw an error.
+			// Creator, Template and Account fields are mandatory on creation. Ensure a survey exists, else throw an error.
 			try
 			{
 				await this.getSurveyByKey(this.request.body.Key);
 			}
 			catch(error)
 			{
-				// Survey not found and creator field is mandatory. Throw an error.
-				const errorMessage = `The survey with key '${this.request.body.Key}' does not exist. The creator field is mandatory on creation.`;
+				// Survey not found and Creator, Template and Account fields are mandatory. Throw an error.
+				const errorMessage = `The survey with key '${this.request.body.Key}' does not exist. The Creator, Template and Account fields are mandatory on creation.`;
 				console.error(errorMessage);
 				throw new Error(errorMessage);
 			}
@@ -195,7 +195,7 @@ class SurveyService
      search()
      {
          this.validateSearchRequest();
-         return this.papiService.searchSurveys(this.request.body);
+         return this.iApiService.searchSurveys(this.request.body);
      }
  
      validateSearchRequest() {

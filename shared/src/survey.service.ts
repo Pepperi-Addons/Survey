@@ -160,7 +160,7 @@ export class SurveyService
 		return await this.iApiService.postSurvey(this.request.body);
 	}
 
-    createKeyIfMissing()
+    private createKeyIfMissing()
     {
         this.request.body.Key = this.request.body.Key ? this.request.body.Key : uuid();
     }

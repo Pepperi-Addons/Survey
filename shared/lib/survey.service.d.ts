@@ -39,7 +39,7 @@ export declare class SurveyService {
      */
     validateGetSurveyByUniqueFieldRequest(): void;
     postSurvey(): Promise<Survey>;
-    createKeyIfMissing(): void;
+    private createKeyIfMissing;
     /**
      * throws an error if mandatory fields are missing from the request body
      */

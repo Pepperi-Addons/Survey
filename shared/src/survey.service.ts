@@ -3,6 +3,7 @@ import { Request } from '@pepperi-addons/debug-server';
 import { UNIQUE_FIELDS } from './constants';
 import { Survey } from './types';
 import IApiService from './iApiService';
+import { v4 as uuid } from 'uuid';
 
 export class SurveyService 
 {
@@ -154,22 +155,21 @@ export class SurveyService
              
 	async postSurvey()
 	{
-		await this.validatePostMandatoryFields();
+		this.createKeyIfMissing()
+        await this.validatePostMandatoryFields();
 		return await this.iApiService.postSurvey(this.request.body);
 	}
+
+    createKeyIfMissing()
+    {
+        this.request.body.Key = this.request.body.Key ? this.request.body.Key : uuid();
+    }
 
 	/**
      * throws an error if mandatory fields are missing from the request body
      */
 	async validatePostMandatoryFields()
 	{
-		if(!this.request.body.Key)
-		{
-			const errorMessage = `The request body must contain a Key parameter.`;
-			console.error(errorMessage);
-			throw new Error(errorMessage);
-		}
-
 		if(!this.request.body.Creator || !this.request.body.Template || !this.request.body.Account)
 		{
 			// Creator, Template and Account fields are mandatory on creation. Ensure a survey exists, else throw an error.

@@ -3,9 +3,8 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { MockApiService } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
-import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
 import { Survey, SurveyService } from '..';
-
+import { validate as uuidValidate } from 'uuid';
 
 chai.use(promised);
 
@@ -41,7 +40,7 @@ describe('POST survey', async () => {
         
     });
 
-    it('should throw a "The request body must contain a Key parameter." exception', async () => {
+    it('create a new survey, creating a new Key automatically (POST doesn\'t include a key)', async () => {
 
         
         const requestCopy = { ...request };
@@ -52,7 +51,14 @@ describe('POST survey', async () => {
 
         const survey = new SurveyService(requestCopy, papiService);
 
-        await expect(survey.postSurvey()).to.be.rejectedWith(`The request body must contain a Key parameter.`);
+        papiService.postSurvey = async (body: Survey) => {
+            expect(uuidValidate(body.Key)).to.be.true;
+            expect(body.Creator).to.equal(requestCopy.body.Creator);
+            // Don't care...
+            return {};
+        }
+
+        await survey.postSurvey();
         
     });
 

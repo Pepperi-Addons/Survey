@@ -2,6 +2,7 @@ import { AddonData, FindOptions } from '@pepperi-addons/papi-sdk'
 import { Request } from '@pepperi-addons/debug-server';
 import { ResourceServiceBuilder } from './types';
 import IApiService from './iApiService';
+import { v4 as uuid } from 'uuid';
 
 export class GenericResourceService 
 {
@@ -165,22 +166,21 @@ export class GenericResourceService
              
 	async postResource() : Promise<AddonData>
 	{
+		this.createKeyIfMissing()
 		await this.validatePostMandatoryFields();
 		return await this.iApiService.postResource(this.request.body);
 	}
+
+	private createKeyIfMissing()
+    {
+        this.request.body.Key = this.request.body.Key ? this.request.body.Key : uuid();
+    }
 
 	/**
      * throws an error if mandatory fields are missing from the request body
      */
 	async validatePostMandatoryFields()
 	{
-		if(!this.request.body.Key)
-		{
-			const errorMessage = `The request body must contain a Key parameter.`;
-			console.error(errorMessage);
-			throw new Error(errorMessage);
-		}
-
 		const isRequestMissingCreationMandatoryField = this.resourceCreationMandatoryFields.some(mandatoryField => !Object.keys(this.request.body).includes(mandatoryField));
 		if(isRequestMissingCreationMandatoryField)
 		{

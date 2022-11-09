@@ -4,6 +4,7 @@ import promised from 'chai-as-promised';
 import { MockApiService, MockGenericResourceServiceBuilder } from './consts';
 import { Request } from "@pepperi-addons/debug-server";
 import { Survey, GenericResourceService } from '..';
+import { validate as uuidValidate } from 'uuid';
 
 
 chai.use(promised);
@@ -44,7 +45,7 @@ describe('POST survey', async () =>
         
 	});
 
-	it('should throw a "The request body must contain a Key parameter." exception', async () => 
+	it('create a new survey, creating a new Key automatically (POST doesn\'t include a key)', async () => 
 	{
 
         
@@ -57,7 +58,15 @@ describe('POST survey', async () =>
 		const mockServiceBuilder = new MockGenericResourceServiceBuilder(requestCopy, papiService);
 		const survey = new GenericResourceService(mockServiceBuilder);
 
-		await expect(survey.postResource()).to.be.rejectedWith(`The request body must contain a Key parameter.`);
+		papiService.postResource = async (body: Survey) => 
+		{
+			expect(uuidValidate(body.Key)).to.be.true;
+			expect(body.Creator).to.equal(requestCopy.body.Creator);
+			// Don't care...
+			return {};
+		}
+
+		await survey.postResource();
         
 	});
 

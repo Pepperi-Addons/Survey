@@ -1,34 +1,48 @@
 // import { PapiClientOptions } from '@pepperi-addons/papi-sdk';
 
-import { FindOptions } from "@pepperi-addons/papi-sdk";
-import { IApiService, Survey } from "..";
+import { AddonData, FindOptions } from "@pepperi-addons/papi-sdk";
+import { IApiService, ResourceServiceBuilder, SurveysConstants } from "..";
 import { expect } from "chai";
+import { Request } from "@pepperi-addons/debug-server";
 
-export class MockApiService implements IApiService
+export class MockApiService<T extends AddonData> implements IApiService<T>
 {
-    searchSurveys(body: any): Promise<Survey[]>
-    {
-        return Promise.resolve([{}]);
-    }
-    async getSurveys(findOptions: FindOptions): Promise<Survey[]>
-    {
-        return Promise.resolve([{}]);
-    }
-    async getSurveyByKey(key: string): Promise<Survey>
-    {
-        return Promise.resolve({});
-    }
-    async getSurveyByUniqueField(unique_field: string, value: any): Promise<Survey[]>
-    {
-        return Promise.resolve([{}]);
-    }
-    async postSurvey(body: Survey): Promise<Survey> {
-        return Promise.resolve({});
-    }
+	searchResources(body: T): Promise<T[]>
+	{
+		return Promise.resolve([{} as T]);
+	}
+	async getResources(findOptions: FindOptions): Promise<T[]>
+	{
+		return Promise.resolve([{} as T]);
+	}
+	async getResourceByKey(key: string): Promise<T>
+	{
+		return Promise.resolve({} as T);
+	}
+	async getResourceByUniqueField(unique_field: string, value: any): Promise<T[]>
+	{
+		return Promise.resolve([{} as T]);
+	}
+	async postResource(body: T): Promise<T> 
+	{
+		return Promise.resolve({} as T);
+	}
 }
 
 export function validateArraysHaveSameObjects(fields: string[] | undefined, arg1: any)
 {
-    expect(fields?.every(field => arg1.includes(field))).to.be.true;
-    expect(arg1.every(field => fields?.includes(field))).to.be.true;
+	expect(fields?.every(field => arg1.includes(field))).to.be.true;
+	expect(arg1.every(field => fields?.includes(field))).to.be.true;
+}
+
+export class MockGenericResourceServiceBuilder implements ResourceServiceBuilder
+{
+	constructor(public request: Request, public iApiService: IApiService<AddonData>)
+	{
+
+	}
+	public resourceCreationMandatoryFields: string[] = SurveysConstants.MandatoryFields;
+	public resourceUniqueFields: string[] = SurveysConstants.UNIQUE_FIELDS;
+	public resourceName: string = 'survey';
+	
 }

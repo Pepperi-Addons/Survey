@@ -1,49 +1,47 @@
 import { Client } from '@pepperi-addons/debug-server/dist';
-import { FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
-import { IApiService } from 'surveys-shared';
-import { SCHEMA_NAME } from 'surveys-shared';
-import { Survey } from 'surveys-shared';
+import { AddonData, FindOptions, PapiClient } from '@pepperi-addons/papi-sdk';
+import { IApiService, Survey } from 'surveys-shared';
 
-export class PapiService implements IApiService
+export class PapiService<T extends AddonData> implements IApiService<T>
 {
-	constructor(protected papiClient: PapiClient, protected client: Client) 
+	constructor(protected papiClient: PapiClient, protected client: Client, protected resourceName: string) 
 	{}
 
-	async getSurveys(findOptions: FindOptions): Promise<Array<Survey>>
+	async getResources(findOptions: FindOptions): Promise<Array<T>>
 	{
-		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).find(findOptions);
+		return await (this.papiClient.addons.data.uuid(this.client.AddonUUID).table(this.resourceName).find(findOptions) as Promise<Array<T>>);
 	}
 
-	async getSurveyByKey(key: any): Promise<Survey>
+	async getResourceByKey(key: any): Promise<T>
 	{
-		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).key(key).get();
+		return await (this.papiClient.addons.data.uuid(this.client.AddonUUID).table(this.resourceName).key(key).get() as Promise<T>);
 	}
 
-    /**
+	/**
      * Returns an *array* of surveys. It is up to the user to validate the response length.
      * @param unique_field The unique field to use for the search
      * @param value The value to search for
      * @returns An *array* of surveys that match the search
      */
-    async getSurveyByUniqueField(unique_field: string, value: any): Promise<Array<Survey>>
-    {
-        const findOptions: FindOptions = 
+	async getResourceByUniqueField(unique_field: string, value: any): Promise<Array<T>>
+	{
+		const findOptions: FindOptions = 
         {
-            where: `${unique_field} = '${value}'`,
+        	where: `${unique_field} = '${value}'`,
         }
         
-        return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).find(findOptions);
-    }
+		return await (this.papiClient.addons.data.uuid(this.client.AddonUUID).table(this.resourceName).find(findOptions) as Promise<Array<T>>);
+	}
 
-    searchSurveys(body: any): Promise<Array<Survey>>
-    {
-        return this.papiClient.post(`/addons/data/search/${this.client.AddonUUID}/${SCHEMA_NAME}`, body);
-    }
+	async postResource(body: Survey): Promise<T>
+	{
+		return await (this.papiClient.addons.data.uuid(this.client.AddonUUID).table(this.resourceName).upsert(body) as Promise<T>);
+	}
 
-    postSurvey(body: Survey): Promise<Survey>
-    {
-		return this.papiClient.addons.data.uuid(this.client.AddonUUID).table(SCHEMA_NAME).upsert(body);
-    }
+	async searchResources(body: any): Promise<Array<T>>
+	{
+		return await (this.papiClient.post(`/addons/data/search/${this.client.AddonUUID}/${this.resourceName}`, body) as Promise<Array<T>>);
+	}
 }
 
 export default PapiService;

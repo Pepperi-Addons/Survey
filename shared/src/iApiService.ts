@@ -1,11 +1,11 @@
-import { FindOptions } from '@pepperi-addons/papi-sdk';
+import { AddonData, FindOptions } from '@pepperi-addons/papi-sdk';
 import { Survey } from './types';
 
-export interface IApiService 
+export interface IApiService<T extends AddonData>
 {
-	getSurveys(findOptions: FindOptions): Promise<Array<Survey>>;
+	getResources(findOptions: FindOptions): Promise<Array<T>>;
 
-	getSurveyByKey(key: string): Promise<Survey>;
+	getResourceByKey(key: string): Promise<T>;
 
     /**
      * Returns an *array* of surveys. It is up to the user to validate the response length.
@@ -13,11 +13,11 @@ export interface IApiService
      * @param value The value to search for
      * @returns An *array* of surveys that match the search
      */
-    getSurveyByUniqueField(unique_field: string, value: any): Promise<Array<Survey>>;
+    getResourceByUniqueField(unique_field: string, value: any): Promise<Array<T>>;
 
-    postSurvey(body: Survey): Promise<Survey>;
+    postResource(body: Survey): Promise<T>;
 
-    searchSurveys(body: any): Promise<Array<Survey>>;
+    searchResources(body: any): Promise<Array<T>>;
 }
 
 export default IApiService;

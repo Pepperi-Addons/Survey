@@ -10,16 +10,35 @@ The error Message is importent! it will be written in the audit log and help the
 
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { AddonDataScheme, PapiClient, Relation } from '@pepperi-addons/papi-sdk'
-import { SCHEMA_NAME } from 'surveys-shared';
-
+import { SurveysConstants } from 'surveys-shared';
 
 export async function install(client: Client, request: Request): Promise<any> 
 {
-    
+
 	const papiClient = createPapiClient(client);
-	await createSurveySchema(papiClient, client);
-	await createDimxRelations(client, papiClient);
-	return {success:true,resultObject:{}}
+	try
+	{
+		// Create base survey template schema, from inner most to outer most.
+		await createBaseSurveyTemplateQuestionsSchema(papiClient, client);
+		await createBaseSurveyTemplateSectionsSchema(papiClient, client);
+		await createBaseSurveyTemplatesSchema(papiClient, client);
+		
+		// Create base survey schemas.
+		await createBaseSurveyAnswersSchema(papiClient, client);
+		await createBaseSurveysSchema(papiClient, client);
+		
+		await createDimxRelations(client, papiClient);
+	}
+	catch(error)
+	{
+		if(error instanceof Error)
+		{
+			console.error(`Error during installation - ${error.message}.\n${error.stack ?? ''}`);
+		}
+		return { success: false, errorMessage: error instanceof Error ? error.message : "Unknown error occurred."};
+	}
+	
+	return { success: true, resultObject: {} }
 }
 
 export async function uninstall(client: Client, request: Request): Promise<any> 
@@ -27,17 +46,17 @@ export async function uninstall(client: Client, request: Request): Promise<any>
 
 	const papiClient = createPapiClient(client);
 	await removeDimxRelations(client, papiClient);
-	return {success:true,resultObject:{}}
+	return { success: true, resultObject: {} }
 }
 
 export async function upgrade(client: Client, request: Request): Promise<any> 
 {
-	return {success:true,resultObject:{}}
+	return { success: true, resultObject: {} }
 }
 
 export async function downgrade(client: Client, request: Request): Promise<any> 
 {
-	return {success:true,resultObject:{}}
+	return { success: true, resultObject: {} }
 }
 
 function createPapiClient(Client: Client) 
@@ -51,67 +70,180 @@ function createPapiClient(Client: Client)
 	});
 }
 
-async function createSurveySchema(papiClient: PapiClient, client: Client)
+async function createBaseSurveysSchema(papiClient: PapiClient, client: Client) 
 {
 	const schema: AddonDataScheme = {
-		Name: SCHEMA_NAME,
-		Type: 'data',
+		Name: SurveysConstants.schemaNames.BASE_SURVEYS,
+		Type: 'abstract',
 		AddonUUID: client.AddonUUID,
-		"SyncData": { 
-			"Sync": true,
+		DataSourceData: { // This property should be inherited from baseActivity. This is currently not implemented. https://pepperi.atlassian.net/browse/DI-21446
+			IndexName: SurveysConstants.DATA_SOURCE_INDEX_NAME
 		},
+
 		Fields:
-        {
-        	Status: 
-            {
-            	Type: 'String'
-            },
-        	ExternalID: 
-            {
-            	Type: 'String'
-            },
-        	Template:
-            {
-            	Type: 'String'
-            },
-        	Answers:
-            {
-            	Type:'Array',
-            	Items:{
-            		Type:'Object',
-            		Fields:{
-            			Key:
-                        {
-                        	Type: 'String'
-                        },
-            			Value:
-                        {
-                        	Type: 'Object'
-                        }
-            		}
-            	}
-            },
-        	Creator:
-            {
-            	Type: 'String'
-            },
-        	Account:
-            {
-            	Type: 'String'
-            }
-        }
+		{
+			ExternalID:
+			{
+				Type: 'String'
+			},
+			Template:
+			{
+				Type: 'Resource',
+				Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATES,
+				AddonUUID: client.AddonUUID
+			},
+			Answers:
+			{
+				Type: 'Array',
+				Items: {
+					Type: 'ContainedResource',
+					Resource: SurveysConstants.schemaNames.SURVEY_ANSWERS,
+					AddonUUID: client.AddonUUID
+				}
+
+			},
+		}
+	} as any; // Waiting for papi-sdk that supports Extends: https://github.com/Pepperi-Addons/papi-sdk/pull/138
+
+	await papiClient.addons.data.schemes.post(schema);
+}
+
+async function createBaseSurveyAnswersSchema(papiClient: PapiClient, client: Client) 
+{
+	const schema: AddonDataScheme = {
+		Name: SurveysConstants.schemaNames.SURVEY_ANSWERS,
+		Type: 'contained',
+		AddonUUID: client.AddonUUID,
+		Fields: {
+			Key: {
+				Type: 'Resource',
+				Resource: SurveysConstants.schemaNames.SURVEY_TEMPLATE_QUESTIONS,
+				AddonUUID: client.AddonUUID
+			},
+			Answer:
+			{
+				Type: "Object",
+				Fields: {
+				}
+			}
+		}
+
 	}
 
 	await papiClient.addons.data.schemes.post(schema);
 }
 
-async function createDimxRelations(client: Client, papiClient: PapiClient)
+async function createBaseSurveyTemplatesSchema(papiClient: PapiClient, client: Client) 
+{
+	const schema: AddonDataScheme = {
+		Name: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATES,
+		Type: 'abstract',
+		AddonUUID: client.AddonUUID,
+		Fields:
+		{
+			Name:
+			{
+				Type: 'String'
+			},
+			Description:
+			{
+				Type: 'String'
+			},
+			Active:
+			{
+				Type: 'Bool'
+			},
+			Sections:
+			{
+				Type: "Array",
+				Items: {
+					Type: 'ContainedResource',
+					Resource: SurveysConstants.schemaNames.SURVEY_TEMPLATE_SECTIONS,
+					AddonUUID: client.AddonUUID
+				}
+			},
+		}
+	}
+
+	await papiClient.addons.data.schemes.post(schema);
+}
+
+async function createBaseSurveyTemplateSectionsSchema(papiClient: PapiClient, client: Client) 
+{
+	const schema: AddonDataScheme = {
+		Name: SurveysConstants.schemaNames.SURVEY_TEMPLATE_SECTIONS,
+		Type: 'contained',
+		AddonUUID: client.AddonUUID,
+		Fields:
+		{
+			Name:
+			{
+				Type: 'String'
+			},
+			Title:
+			{
+				Type: 'String'
+			},
+			Description:
+			{
+				Type: 'String'
+			},
+			Questions:
+			{
+				Type: "Array",
+				Items: {
+					Type: 'ContainedResource',
+					Resource: SurveysConstants.schemaNames.SURVEY_TEMPLATE_QUESTIONS,
+					AddonUUID: client.AddonUUID
+				}
+			},
+		}
+	}
+
+	await papiClient.addons.data.schemes.post(schema);
+}
+
+async function createBaseSurveyTemplateQuestionsSchema(papiClient: PapiClient, client: Client) 
+{
+	const schema: AddonDataScheme = {
+		Name: SurveysConstants.schemaNames.SURVEY_TEMPLATE_QUESTIONS,
+		Type: 'contained',
+		AddonUUID: client.AddonUUID,
+		Fields:
+		{
+			Name:
+			{
+				Type: 'String'
+			},
+			Title:
+			{
+				Type: 'String'
+			},
+			Description:
+			{
+				Type: 'String'
+			},
+			Type:
+			{
+				Type: 'String'
+			},
+			Mandatory:
+			{
+				Type: 'Bool'
+			}
+		}
+	}
+
+	await papiClient.addons.data.schemes.post(schema);
+}
+
+async function createDimxRelations(client: Client, papiClient: PapiClient) 
 {
 	const isHidden = false;
 	await postDimxRelations(client, isHidden, papiClient);
 }
 
-async function removeDimxRelations(client: Client, papiClient: PapiClient)
+async function removeDimxRelations(client: Client, papiClient: PapiClient) 
 {
 	const isHidden = true;
 	await postDimxRelations(client, isHidden, papiClient);
@@ -120,28 +252,28 @@ async function removeDimxRelations(client: Client, papiClient: PapiClient)
 async function postDimxRelations(client: Client, isHidden: boolean, papiClient: PapiClient) 
 {
 
-		const importRelation: Relation = {
-			RelationName: "DataImportResource",
-			AddonUUID: client.AddonUUID,
-			AddonRelativeURL: '',
-			Name: SCHEMA_NAME,
-			Type: 'AddonAPI',
-			Source: 'adal',
-			Hidden: isHidden
-		};
+	const importRelation: Relation = {
+		RelationName: "DataImportResource",
+		AddonUUID: client.AddonUUID,
+		AddonRelativeURL: '',
+		Name: SurveysConstants.schemaNames.BASE_SURVEYS,
+		Type: 'AddonAPI',
+		Source: 'adal',
+		Hidden: isHidden
+	};
 
-		const exportRelation: Relation = {
-			RelationName: "DataExportResource",
-			AddonUUID: client.AddonUUID,
-			AddonRelativeURL: '',
-			Name: SCHEMA_NAME,
-			Type: 'AddonAPI',
-			Source: 'adal',
-			Hidden: isHidden
-		};
+	const exportRelation: Relation = {
+		RelationName: "DataExportResource",
+		AddonUUID: client.AddonUUID,
+		AddonRelativeURL: '',
+		Name: SurveysConstants.schemaNames.BASE_SURVEYS,
+		Type: 'AddonAPI',
+		Source: 'adal',
+		Hidden: isHidden
+	};
 
-		await upsertRelation(papiClient, importRelation);
-		await upsertRelation(papiClient, exportRelation);
+	await upsertRelation(papiClient, importRelation);
+	await upsertRelation(papiClient, exportRelation);
 }
 
 async function upsertRelation(papiClient: PapiClient, relation: Relation) 

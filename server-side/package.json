@@ -32,7 +32,7 @@
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "*",
-        "@pepperi-addons/papi-sdk": "^1.42.0",
+        "@pepperi-addons/papi-sdk": "^1.43.0",
         "surveys-shared": "file:../shared"
     }
 }

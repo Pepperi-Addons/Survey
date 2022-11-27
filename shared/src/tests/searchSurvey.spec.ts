@@ -46,7 +46,7 @@ describe('Search Survey', async () =>
 
 
 			//Don't care...
-			return [];
+			return {Objects: []};
 		}
 
 		await survey.search();

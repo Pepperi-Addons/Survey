@@ -23,7 +23,7 @@ export async function get_baseSurveys_by_unique_field(client: Client, request: R
 	return await getGenericResourceByUniqueFieldAdapter(request, baseSurveysService);
 }
 
-export async function baseSurveys_search(client: Client, request: Request) : Promise<Array<AddonData>>
+export async function baseSurveys_search(client: Client, request: Request) : Promise<{Objects: AddonData[], Count?: number}>
 {
 	const baseSurveysService = getBaseSurveysService(client, request);
 	return await genericResourceSearchAdapter(request, baseSurveysService);
@@ -60,7 +60,7 @@ export async function get_baseSurveyTemplates_by_unique_field(client: Client, re
 	return await getGenericResourceByUniqueFieldAdapter(request, baseSurveyTemplatesService);
 }
 
-export async function baseSurveyTemplates_search(client: Client, request: Request): Promise<AddonData[]>
+export async function baseSurveyTemplates_search(client: Client, request: Request): Promise<{Objects: AddonData[], Count?: number}>
 {
 	const baseSurveyTemplatesService = getBaseSurveyTemplatesService(client, request);
 	return await genericResourceSearchAdapter(request, baseSurveyTemplatesService);

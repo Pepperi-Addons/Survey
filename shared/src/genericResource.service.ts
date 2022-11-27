@@ -204,7 +204,7 @@ export class GenericResourceService
      * Similar to getResources 
      * @returns An array of resources that match the parameters of the request body
      */
-	async search(): Promise<AddonData[]>
+	async search(): Promise<{Objects: AddonData[], Count?: number}>
 	{
 		this.validateSearchRequest();
 		return await this.iApiService.searchResources(this.request.body);

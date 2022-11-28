@@ -7,9 +7,9 @@ import { Request } from "@pepperi-addons/debug-server";
 
 export class MockApiService<T extends AddonData> implements IApiService<T>
 {
-	searchResources(body: T): Promise<T[]>
+	searchResources(body: T): Promise<{Objects: T[], Count?: number}>
 	{
-		return Promise.resolve([{} as T]);
+		return Promise.resolve({Objects: [{} as T]});
 	}
 	async getResources(findOptions: FindOptions): Promise<T[]>
 	{

@@ -54,12 +54,10 @@ export async function upgrade(client: Client, request: Request): Promise<any>
 {
 	if (request.body.FromVersion && semver.compare(request.body.FromVersion, '0.5.1') < 0) 
 	{
-		const papiClient = createPapiClient(client);
-
-		await setSchemaSyncToTrue(papiClient, SurveysConstants.schemaNames.BASE_SURVEYS);
-		await setSchemaSyncToTrue(papiClient, SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATES);
+		const errorMessage = `Upgrading from versions <= 0.5.0 to the requested ${request.body.ToVersion} is unsupported. Please uninstall your current version, and install the wanted version.`;
+		return { success: false, errorMessage: errorMessage };
 	}
-	
+
 	return {success:true,resultObject:{}}
 }
 

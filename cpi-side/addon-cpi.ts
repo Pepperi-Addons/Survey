@@ -23,16 +23,29 @@ router.post('/baseSurveys', async (req, res) => {
     res.json(survey);
 });
 
-router.get('/get_baseSurveys_by_key', async (req, res) => {
+router.get('/baseSurveys/key/:key', async (req, res) => {
+    // SurveyService works with a request's query, not params.
+    req.query.key = req.params.key;
     const surveyService = getBaseSurveysService(req);
     const survey = await surveyService.getResourceByKey();
 
     res.json(survey);
 });
 
-router.get('/get_baseSurveys_by_unique_field', async (req, res) => {
+router.get('/baseSurveys/unique/:fieldID/:fieldValue', async (req, res) => {
+    // SurveyService works with a request's query, not params.
+    req.query.unique_field = req.params.fieldID;
+    req.query.value = req.params.fieldValue;
+
     const surveyService = getBaseSurveysService(req);
     const surveys = await surveyService.getResourceByUniqueField();
+
+    res.json(surveys);
+});
+
+router.get('/baseSurveys/search', async (req, res) => {
+    const surveyService = getBaseSurveysService(req);
+    const surveys = await surveyService.search();
 
     res.json(surveys);
 });
@@ -62,16 +75,29 @@ router.post('/baseSurveyTemplates', async (req, res) => {
     res.json(survey);
 });
 
-router.get('/get_baseSurveyTemplates_by_key', async (req, res) => {
+router.get('/baseSurveyTemplates/key/:key', async (req, res) => {
+    // SurveyTemplatesService works with a request's query, not params.
+    req.query.key = req.params.key;
     const surveyService = getBaseSurveyTemplatesService(req);
     const survey = await surveyService.getResourceByKey();
 
     res.json(survey);
 });
 
-router.get('/get_baseSurveyTemplates_by_unique_field', async (req, res) => {
+router.get('/baseSurveyTemplates/unique/:fieldID/:fieldValue', async (req, res) => {
+    // SurveyService works with a request's query, not params.
+    req.query.unique_field = req.params.fieldID;
+    req.query.value = req.params.fieldValue;
+
     const surveyService = getBaseSurveyTemplatesService(req);
     const surveys = await surveyService.getResourceByUniqueField();
+
+    res.json(surveys);
+});
+
+router.get('/baseSurveyTemplates/search', async (req, res) => {
+    const surveyService = getBaseSurveysService(req);
+    const surveys = await surveyService.search();
 
     res.json(surveys);
 });

@@ -11,6 +11,9 @@ export interface IApiService<T extends AddonData> {
      */
     getResourceByUniqueField(unique_field: string, value: any): Promise<Array<T>>;
     postResource(body: Survey): Promise<T>;
-    searchResources(body: any): Promise<Array<T>>;
+    searchResources(body: any): Promise<{
+        Objects: T[];
+        Count?: number;
+    }>;
 }
 export default IApiService;

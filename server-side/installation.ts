@@ -11,7 +11,7 @@ The error Message is importent! it will be written in the audit log and help the
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { AddonDataScheme, PapiClient, Relation } from '@pepperi-addons/papi-sdk'
 import { SurveysConstants } from 'surveys-shared';
-import semver from 'semver';
+import semverLessThanEqual from 'semver/functions/lte';
 
 export async function install(client: Client, request: Request): Promise<any> 
 {
@@ -52,13 +52,10 @@ export async function uninstall(client: Client, request: Request): Promise<any>
 
 export async function upgrade(client: Client, request: Request): Promise<any> 
 {
-	if (request.body.FromVersion && semver.compare(request.body.FromVersion, '0.5.1') < 0) 
+	if (request.body.FromVersion && semverLessThanEqual(request.body.FromVersion, '0.5.3')) 
 	{
-		const papiClient = createPapiClient(client);
-		// Set baseSurveys and baseSurveyTemplates schemas Sync to true.
-		// baseSurveys should extend baseActivities. 
-		await createBaseSurveyTemplatesSchema(papiClient, client);
-		await createBaseSurveysSchema(papiClient, client);
+		const errorMessage = `Upgrading to this version form versions <= 0.5.3 is not supported. Kindly uninstall the currently installed version, and install the requested one.`;
+		return {success: false, errorMessage: errorMessage};
 	}
 	return {success:true,resultObject:{}}
 }
@@ -119,7 +116,7 @@ async function createBaseSurveysSchema(papiClient: PapiClient, client: Client)
 
 			},
 		}
-	} as any; // Waiting for papi-sdk that supports Extends: https://github.com/Pepperi-Addons/papi-sdk/pull/138
+	}
 
 	await papiClient.addons.data.schemes.post(schema);
 }
@@ -299,12 +296,4 @@ async function postDimxRelations(client: Client, isHidden: boolean, papiClient: 
 async function upsertRelation(papiClient: PapiClient, relation: Relation) 
 {
 	return papiClient.post('/addons/data/relations', relation);
-}
-
-async function setSchemaSyncToTrue(papiClient: PapiClient, schemaName: string)
-{
-	const schema: AddonDataScheme = await papiClient.addons.data.schemes.name(schemaName).get();
-	schema.SyncData = {Sync: true};
-
-	await papiClient.addons.data.schemes.post(schema);
 }

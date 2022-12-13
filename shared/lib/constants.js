@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SurveyTemplatesConstants = exports.SurveysConstants = void 0;
 exports.SurveysConstants = {
     schemaNames: {
-        BASE_ACTIVITIES: "baseActivities",
-        BASE_SURVEYS: "baseSurveys",
-        BASE_SURVEY_TEMPLATES: "baseSurveyTemplates",
+        BASE_ACTIVITIES: "base_activities",
+        BASE_SURVEYS: "base_surveys",
+        BASE_SURVEY_TEMPLATES: "base_survey_templates",
         SURVEY_ANSWERS: "surveyAnswers",
         SURVEY_TEMPLATE_SECTIONS: "surveyTemplateSections",
         SURVEY_TEMPLATE_QUESTIONS: "surveyTemplateQuestions"

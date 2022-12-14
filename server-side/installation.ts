@@ -95,10 +95,6 @@ async function createBaseSurveysSchema(papiClient: PapiClient, client: Client)
 		},
 		Fields:
 		{
-			ExternalID:
-			{
-				Type: 'String'
-			},
 			Template:
 			{
 				Type: 'Resource',

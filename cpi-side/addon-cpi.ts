@@ -8,22 +8,22 @@ export const router = Router();
 export async function load(configuration: any) {
 }
 
-//#region base_surveys
-router.get('/base_surveys', async (req, res) => {
+//#region surveys
+router.get('/surveys', async (req, res) => {
     const surveyService = getBaseSurveysService(req);
     const surveys = await surveyService.getResources();
 
     res.json(surveys);
 });
 
-router.post('/base_surveys', async (req, res) => {
+router.post('/surveys', async (req, res) => {
     const surveyService = getBaseSurveysService(req);
     const survey = await surveyService.postResource();
 
     res.json(survey);
 });
 
-router.get('/base_surveys/key/:key', async (req, res) => {
+router.get('/surveys/key/:key', async (req, res) => {
     // SurveyService works with a request's query, not params.
     req.query.key = req.params.key;
     const surveyService = getBaseSurveysService(req);
@@ -32,7 +32,7 @@ router.get('/base_surveys/key/:key', async (req, res) => {
     res.json(survey);
 });
 
-router.get('/base_surveys/unique/:fieldID/:fieldValue', async (req, res) => {
+router.get('/surveys/unique/:fieldID/:fieldValue', async (req, res) => {
     // SurveyService works with a request's query, not params.
     req.query.unique_field = req.params.fieldID;
     req.query.value = req.params.fieldValue;
@@ -43,7 +43,7 @@ router.get('/base_surveys/unique/:fieldID/:fieldValue', async (req, res) => {
     res.json(surveys);
 });
 
-router.get('/base_surveys/search', async (req, res) => {
+router.get('/surveys/search', async (req, res) => {
     const surveyService = getBaseSurveysService(req);
     const surveys = await surveyService.search();
 
@@ -60,22 +60,22 @@ function getBaseSurveysService(request: Request)
 
 //#endregion
 
-//#region base_survey_templates
-router.get('/base_survey_templates', async (req, res) => {
+//#region survey_templates
+router.get('/survey_templates', async (req, res) => {
     const surveyService = getBaseSurveyTemplatesService(req);
     const surveys = await surveyService.getResources();
 
     res.json(surveys);
 });
 
-router.post('/base_survey_templates', async (req, res) => {
+router.post('/survey_templates', async (req, res) => {
     const surveyService = getBaseSurveyTemplatesService(req);
     const survey = await surveyService.postResource();
 
     res.json(survey);
 });
 
-router.get('/base_survey_templates/key/:key', async (req, res) => {
+router.get('/survey_templates/key/:key', async (req, res) => {
     // SurveyTemplatesService works with a request's query, not params.
     req.query.key = req.params.key;
     const surveyService = getBaseSurveyTemplatesService(req);
@@ -84,7 +84,7 @@ router.get('/base_survey_templates/key/:key', async (req, res) => {
     res.json(survey);
 });
 
-router.get('/base_survey_templates/unique/:fieldID/:fieldValue', async (req, res) => {
+router.get('/survey_templates/unique/:fieldID/:fieldValue', async (req, res) => {
     // SurveyService works with a request's query, not params.
     req.query.unique_field = req.params.fieldID;
     req.query.value = req.params.fieldValue;
@@ -95,7 +95,7 @@ router.get('/base_survey_templates/unique/:fieldID/:fieldValue', async (req, res
     res.json(surveys);
 });
 
-router.get('/base_survey_templates/search', async (req, res) => {
+router.get('/survey_templates/search', async (req, res) => {
     const surveyService = getBaseSurveysService(req);
     const surveys = await surveyService.search();
 

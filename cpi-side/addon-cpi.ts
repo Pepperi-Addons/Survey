@@ -43,7 +43,7 @@ router.get('/surveys/unique/:fieldID/:fieldValue', async (req, res) => {
     res.json(surveys);
 });
 
-router.get('/surveys/search', async (req, res) => {
+router.post('/surveys/search', async (req, res) => {
     const surveyService = getBaseSurveysService(req);
     const surveys = await surveyService.search();
 
@@ -95,7 +95,7 @@ router.get('/survey_templates/unique/:fieldID/:fieldValue', async (req, res) => 
     res.json(surveys);
 });
 
-router.get('/survey_templates/search', async (req, res) => {
+router.post('/survey_templates/search', async (req, res) => {
     const surveyService = getBaseSurveysService(req);
     const surveys = await surveyService.search();
 

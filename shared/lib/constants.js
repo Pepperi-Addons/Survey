@@ -4,8 +4,8 @@ exports.SurveyTemplatesConstants = exports.SurveysConstants = void 0;
 exports.SurveysConstants = {
     schemaNames: {
         BASE_ACTIVITIES: "base_activities",
-        BASE_SURVEYS: "base_surveys",
-        BASE_SURVEY_TEMPLATES: "base_survey_templates",
+        BASE_SURVEYS: "surveys",
+        BASE_SURVEY_TEMPLATES: "survey_templates",
         SURVEY_ANSWERS: "surveyAnswers",
         SURVEY_TEMPLATE_SECTIONS: "surveyTemplateSections",
         SURVEY_TEMPLATE_QUESTIONS: "surveyTemplateQuestions"

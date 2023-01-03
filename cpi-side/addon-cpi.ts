@@ -96,7 +96,7 @@ router.get('/survey_templates/unique/:fieldID/:fieldValue', async (req, res) => 
 });
 
 router.post('/survey_templates/search', async (req, res) => {
-    const surveyService = getBaseSurveysService(req);
+    const surveyService = getBaseSurveyTemplatesService(req);
     const surveys = await surveyService.search();
 
     res.json(surveys);

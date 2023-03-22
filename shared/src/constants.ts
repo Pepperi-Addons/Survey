@@ -14,6 +14,7 @@ export const SurveysConstants =
 	},
 	UNIQUE_FIELDS: ["Key"],
 	DATA_SOURCE_INDEX_NAME: "baseActivities",
+	UDC_INDEX_NAME: "122c0e9d-c240-4865-b446-f37ece866c22_data",
 	MandatoryFields : ["Creator", "Template", "Account"]
 }
 

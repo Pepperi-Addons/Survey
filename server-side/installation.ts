@@ -57,6 +57,25 @@ export async function upgrade(client: Client, request: Request): Promise<any>
 		const errorMessage = `Upgrading to this version form versions <= 0.5.6 is not supported. Kindly uninstall the currently installed version, and install the requested one.`;
 		return {success: false, errorMessage: errorMessage};
 	}
+	if (request.body.FromVersion && semverLessThanEqual(request.body.FromVersion, '0.6.0')) 
+	{
+		// Update surveys and survey_templates schemas
+		const papiClient = createPapiClient(client);
+
+		try
+		{
+			await createBaseSurveyTemplatesSchema(papiClient, client);
+			await createBaseSurveysSchema(papiClient, client);
+		}
+		catch(error)
+		{
+			if(error instanceof Error)
+			{
+				console.error(`Error during installation - ${error.message}.\n${error.stack ?? ''}`);
+			}
+			return { success: false, errorMessage: error instanceof Error ? error.message : "Unknown error occurred."};
+		}
+	}
 	return {success:true,resultObject:{}}
 }
 
@@ -99,7 +118,18 @@ async function createBaseSurveysSchema(papiClient: PapiClient, client: Client)
 			{
 				Type: 'Resource',
 				Resource: SurveysConstants.schemaNames.BASE_SURVEY_TEMPLATES,
-				AddonUUID: client.AddonUUID
+				AddonUUID: client.AddonUUID,
+				Indexed: true,
+				IndexedFields: {
+					Name: {
+						Indexed: true,
+						Type: "String"
+					},
+					Active: {
+						Indexed: true,
+						Type: "Bool"
+					}
+				}
 			},
 			Answers:
 			{
@@ -149,22 +179,28 @@ async function createBaseSurveyTemplatesSchema(papiClient: PapiClient, client: C
 		Type: 'abstract',
 		AddonUUID: client.AddonUUID,
 		SyncData:
-			{	
-				Sync: true,
-			},
+		{	
+			Sync: true,
+		},
+		DataSourceData: {
+			IndexName: SurveysConstants.UDC_INDEX_NAME
+		},
 		Fields:
 		{
 			Name:
 			{
-				Type: 'String'
+				Type: 'String',
+				Indexed: true
 			},
 			Description:
 			{
-				Type: 'String'
+				Type: 'String',
+				Indexed: true
 			},
 			Active:
 			{
-				Type: 'Bool'
+				Type: 'Bool',
+				Indexed: true
 			},
 			Sections:
 			{
